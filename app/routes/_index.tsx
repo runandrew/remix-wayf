@@ -3,6 +3,7 @@ import { Form, redirect, useNavigation } from "@remix-run/react";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { create } from "@/api/meet";
 import { SubmitButton } from "~/components/SubmitButton";
+import { ModeToggle } from "~/components/ModeToggle";
 
 export const meta: MetaFunction = () => {
     return [
@@ -45,6 +46,7 @@ export default function Index() {
                     />
                 </div>
             </Form>
+            <ModeToggle />
         </main>
     );
 }
