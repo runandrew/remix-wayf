@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Availabilities } from "@/types";
 import { formatDate } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
-import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, Plus } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -55,7 +54,7 @@ export default function MeetupDetails() {
     const navigation = useNavigation();
 
     return (
-        <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
+        <div className="flex items-center flex-col gap-4 pt-20 w-full">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
@@ -87,22 +86,6 @@ export default function MeetupDetails() {
                     </div>
                 ))}
             </div>
-            <Separator />
-            <div className="w-full flex flex-row items-center justify-between pb-6">
-                <Link to={`/`}>
-                    <span className="scroll-m-20 text-m font-semibold tracking-tight">
-                        WAYF
-                    </span>
-                </Link>
-                <div className="flex flex-row items-center">
-                    <Link to={`/`}>
-                        <small>Create a new meetup</small>
-                    </Link>
-                    <div className="pl-1">
-                        <Plus size={16} />
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     );
 }

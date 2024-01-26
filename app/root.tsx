@@ -1,6 +1,7 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
+    Link,
     Links,
     LiveReload,
     Meta,
@@ -17,6 +18,9 @@ import {
     useTheme,
 } from "remix-themes";
 import { themeSessionResolver } from "./sessions.server";
+import { Separator } from "@/components/ui/separator";
+import { Plus } from "lucide-react";
+import { ModeToggle } from "./components/ModeToggle";
 
 export const links: LinksFunction = () => [
     { rel: "stylesheet", href: styles },
@@ -60,7 +64,20 @@ function App() {
                 <Links />
             </head>
             <body>
-                <Outlet />
+                <main className="flex min-h-dvh items-center justify-between flex-col max-w-sm mx-auto">
+                    <Outlet />
+                    <div className="w-full flex flex-col items-center justify-between gap-1 pt-8">
+                        <Separator />
+                        <div className="w-full flex flex-row items-center justify-between pb-4">
+                            <Link to={`/`}>
+                                <span className="scroll-m-20 text-m font-semibold tracking-tight">
+                                    WAYF
+                                </span>
+                            </Link>
+                            <ModeToggle />
+                        </div>
+                    </div>
+                </main>
                 <ScrollRestoration />
                 <Scripts />
                 <LiveReload />

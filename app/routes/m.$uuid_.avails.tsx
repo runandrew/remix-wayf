@@ -35,7 +35,7 @@ const Avails = () => {
     const [_, setSearchParams] = useSearchParams();
 
     return (
-        <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
+        <div className="flex items-center flex-col gap-4 pt-20 w-full">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
@@ -87,7 +87,7 @@ const Avails = () => {
                     </div>
                 </>
             )}
-        </main>
+        </div>
     );
 };
 
@@ -118,7 +118,7 @@ function AddAvails() {
     const navigation = useNavigation();
 
     return (
-        <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
+        <div className="flex items-center flex-col gap-4 pt-20 w-full">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
@@ -148,7 +148,7 @@ function AddAvails() {
                     </div>
                 </div>
             </Form>
-        </main>
+        </div>
     );
 }
 

@@ -22,7 +22,7 @@ export default function Index() {
     const navigation = useNavigation();
 
     return (
-        <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
+        <div className="flex items-center flex-col gap-4 pt-20 w-full">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 WAYF
             </h1>
@@ -46,7 +46,6 @@ export default function Index() {
                     />
                 </div>
             </Form>
-            <ModeToggle />
-        </main>
+        </div>
     );
 }
