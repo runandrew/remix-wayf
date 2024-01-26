@@ -9,14 +9,19 @@ import {
     useLoaderData,
     Form,
     useNavigation,
-    useParams,
     useSearchParams,
 } from "@remix-run/react";
 import { parseISO } from "date-fns/parseISO";
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
+import z from "zod";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+const paramSchema = z.object({
+    uuid: z.string(),
+});
+
+export const loader = async ({ params: raw }: LoaderFunctionArgs) => {
+    const params = paramSchema.parse(raw);
     const meet = await findMeet(params.uuid);
     if (!meet) {
         throw new Response("Not Found", { status: 404 });
@@ -27,7 +32,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const Avails = () => {
     const { meet } = useLoaderData<typeof loader>();
     const navigation = useNavigation();
-    const params = useParams();
     const [_, setSearchParams] = useSearchParams();
 
     return (
@@ -86,18 +90,17 @@ const Avails = () => {
     );
 };
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
+    const params = paramSchema.parse(raw);
     const formData = await request.formData();
     const url = new URL(request.url);
-    const group = url.searchParams.get("group");
+    const group = url.searchParams.get("group") ?? "";
+    const dates = formData.get("dates")?.toString() ?? "";
 
     await addMeetAvails(
         params.uuid,
         decodeURIComponent(group),
-        formData
-            .get("dates")
-            .split(",")
-            .map((d) => parseISO(d))
+        dates.split(",").map((d) => parseISO(d))
     );
 
     return redirect(`/m/${params.uuid}`);
@@ -106,7 +109,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 function AddAvails() {
     const { meet } = useLoaderData<typeof loader>();
     const [searchParams] = useSearchParams();
-    const decodedGroup = decodeURIComponent(searchParams.get("group"));
+    const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
     const dates = meet.availabilities[decodedGroup] ?? [];
     const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
         dates.map((date) => parseISO(date.day))
