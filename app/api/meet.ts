@@ -36,8 +36,6 @@ export async function addMeetAvails(
     const meet = await findMeet(uuid);
     const avails = meet.availabilities;
 
-    console.log("in add meet avails", dates);
-
     const updatedAvails = {
         ...avails,
         [group]: dates.map((d) => ({

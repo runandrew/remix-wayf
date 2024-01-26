@@ -36,7 +36,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
             .map((d) => parseISO(d))
     );
 
-    console.log(updated);
     return redirect(`/m/${params.uuid}`);
 };
 

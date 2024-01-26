@@ -20,7 +20,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Index() {
     const navigation = useNavigation();
-    console.log(navigation.state);
 
     return (
         <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
