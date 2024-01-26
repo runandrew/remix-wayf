@@ -40,8 +40,9 @@ export default function Index() {
                         required
                     />
                     <SubmitButton
-                        submitting={navigation.state !== "idle"}
+                        submitting={navigation.state === "submitting"}
                         text="Create"
+                        disabled={navigation.state === "loading"}
                     />
                 </div>
             </Form>

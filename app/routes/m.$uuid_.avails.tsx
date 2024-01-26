@@ -143,6 +143,7 @@ function AddAvails() {
                         <SubmitButton
                             text="Save"
                             submitting={navigation.state === "submitting"}
+                            disabled={navigation.state === "loading"}
                         />
                     </div>
                 </div>
