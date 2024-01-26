@@ -75,6 +75,13 @@ export default function MeetupDetails() {
                             <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
                                 {formatDate(parseISO(date.day), "EEEE, MMM d")}
                             </h4>
+                            <div className="pl-2">
+                                <span className="text-xs">
+                                    {`${date.groups.length} / ${
+                                        Object.keys(meet.availabilities).length
+                                    }`}
+                                </span>
+                            </div>
                             {date.groups.length ===
                                 Object.keys(meet.availabilities).length && (
                                 <div className="pl-2">
