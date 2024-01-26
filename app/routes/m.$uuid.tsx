@@ -1,5 +1,10 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useLoaderData, useParams } from "@remix-run/react";
+import {
+    Link,
+    useLoaderData,
+    useNavigation,
+    useParams,
+} from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { findMeet } from "~/api/meet";
 import { Button } from "@/components/ui/button";
@@ -47,6 +52,7 @@ export default function MeetupDetails() {
     const { meet } = useLoaderData<typeof loader>();
     const dates = availsByDate(meet.availabilities);
     const params = useParams();
+    const navigation = useNavigation();
 
     return (
         <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
@@ -55,7 +61,7 @@ export default function MeetupDetails() {
             </h1>
             <div className="pb-4 flex flex-row">
                 <div className="pr-4">
-                    <Button asChild>
+                    <Button disabled={navigation.state === "loading"} asChild>
                         <Link to={`/m/${params.uuid}/avails`}>
                             Add Availability
                         </Link>

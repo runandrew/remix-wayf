@@ -48,6 +48,7 @@ const Avails = () => {
                     <SubmitButton
                         text="Next"
                         submitting={navigation.state === "submitting"}
+                        disabled={navigation.state === "loading"}
                     />
                 </div>
             </Form>
