@@ -7,8 +7,8 @@ import { ModeToggle } from "~/components/ModeToggle";
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "New Remix App" },
-        { name: "description", content: "Welcome to Remix!" },
+        { title: "WAYF: When are you free?" },
+        { name: "description", content: "Scheduling, simplified" },
     ];
 };
 
