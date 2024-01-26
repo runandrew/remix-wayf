@@ -64,7 +64,7 @@ function App() {
                 <Links />
             </head>
             <body>
-                <main className="flex min-h-dvh items-center justify-between flex-col max-w-sm mx-auto">
+                <main className="flex min-h-dvh items-center justify-between flex-col max-w-sm mx-auto px-4">
                     <Outlet />
                     <div className="w-full flex flex-col items-center justify-between gap-1 pt-8">
                         <Separator />
