@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Form, redirect, useNavigation } from "@remix-run/react";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { create } from "@/api/meet";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { SubmitButton } from "~/components/SubmitButton";
 
 export const meta: MetaFunction = () => {
     return [

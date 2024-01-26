@@ -2,7 +2,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { SubmitButton } from "~/components/SubmitButton";
 import { findMeet } from "@/api/meet";
 import { redirect, json } from "@remix-run/node";
 import {

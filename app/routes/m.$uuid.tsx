@@ -8,6 +8,7 @@ import { formatDate } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Plus } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const meet = await findMeet(params.uuid);
@@ -60,7 +61,7 @@ export default function MeetupDetails() {
                         </Link>
                     </Button>
                 </div>
-                {/* <ShareButton params={{ meet }} /> */}
+                <ShareButton params={{ meet }} />
             </div>
             <div className="w-full pb-4">
                 {dates.map((date) => (
