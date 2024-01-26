@@ -5,7 +5,13 @@ import { Pencil } from "lucide-react";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { findMeet } from "@/api/meet";
 import { redirect, json } from "@remix-run/node";
-import { Link, useLoaderData, Form, useNavigation } from "@remix-run/react";
+import {
+    Link,
+    useLoaderData,
+    Form,
+    useNavigation,
+    useParams,
+} from "@remix-run/react";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const meet = await findMeet(params.uuid);
@@ -20,9 +26,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return redirect(`/m/${params.uuid}/avails/${formData.get("group")}`);
 };
 
-const Avails = ({ params }: { params: { uuid: string } }) => {
+const Avails = () => {
     const { meet } = useLoaderData<typeof loader>();
     const navigation = useNavigation();
+    const params = useParams();
 
     return (
         <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
