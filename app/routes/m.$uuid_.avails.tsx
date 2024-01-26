@@ -3,15 +3,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { SubmitButton } from "~/components/SubmitButton";
-import { findMeet } from "@/api/meet";
+import { addMeetAvails, findMeet } from "@/api/meet";
 import { redirect, json } from "@remix-run/node";
 import {
-    Link,
     useLoaderData,
     Form,
     useNavigation,
     useParams,
+    useSearchParams,
 } from "@remix-run/react";
+import { parseISO } from "date-fns/parseISO";
+import React from "react";
+import { Calendar } from "@/components/ui/calendar";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const meet = await findMeet(params.uuid);
@@ -21,15 +24,11 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     return json({ meet });
 };
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-    const formData = await request.formData();
-    return redirect(`/m/${params.uuid}/avails/${formData.get("group")}`);
-};
-
 const Avails = () => {
     const { meet } = useLoaderData<typeof loader>();
     const navigation = useNavigation();
     const params = useParams();
+    const [_, setSearchParams] = useSearchParams();
 
     return (
         <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
@@ -39,12 +38,12 @@ const Avails = () => {
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
                 Add your name
             </h3>
-            <Form method="post" className="pb-4">
+            <Form className="pb-4">
                 <div className="flex flex-row gap-4">
                     <Input name="group" type="text" placeholder="Name" />
                     <SubmitButton
                         text="Next"
-                        submitting={navigation.state !== "idle"}
+                        submitting={navigation.state === "submitting"}
                     />
                 </div>
             </Form>
@@ -64,17 +63,17 @@ const Avails = () => {
                                         <Button
                                             variant="outline"
                                             size="icon"
-                                            asChild
+                                            onClick={() =>
+                                                setSearchParams(
+                                                    new URLSearchParams({
+                                                        group: encodeURIComponent(
+                                                            group
+                                                        ),
+                                                    })
+                                                )
+                                            }
                                         >
-                                            <Link
-                                                to={`/m/${
-                                                    params.uuid
-                                                }/avails/${encodeURIComponent(
-                                                    group
-                                                )}`}
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </Link>
+                                            <Pencil className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </div>
@@ -87,4 +86,72 @@ const Avails = () => {
     );
 };
 
-export default Avails;
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const url = new URL(request.url);
+    const group = url.searchParams.get("group");
+
+    await addMeetAvails(
+        params.uuid,
+        decodeURIComponent(group),
+        formData
+            .get("dates")
+            .split(",")
+            .map((d) => parseISO(d))
+    );
+
+    return redirect(`/m/${params.uuid}`);
+};
+
+function AddAvails() {
+    const { meet } = useLoaderData<typeof loader>();
+    const [searchParams] = useSearchParams();
+    const decodedGroup = decodeURIComponent(searchParams.get("group"));
+    const dates = meet.availabilities[decodedGroup] ?? [];
+    const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
+        dates.map((date) => parseISO(date.day))
+    );
+    const navigation = useNavigation();
+
+    return (
+        <main className="flex min-h-screen items-center flex-col gap-4 pt-20 px-4 w-full max-w-sm mx-auto">
+            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
+                {meet.name}
+            </h1>
+            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
+                {`When are you free, ${decodedGroup}?`}
+            </h4>
+            <Form method="post">
+                <Input
+                    name="dates"
+                    className="hidden"
+                    readOnly={true}
+                    value={multiDates?.map((d) => d.toISOString())}
+                />
+                <div className="flex flex-col gap-4 items-center">
+                    <Calendar
+                        mode="multiple"
+                        selected={multiDates}
+                        onSelect={setMultiDates}
+                        className="rounded-md border"
+                    />
+                    <div>
+                        <SubmitButton
+                            text="Save"
+                            submitting={navigation.state === "submitting"}
+                        />
+                    </div>
+                </div>
+            </Form>
+        </main>
+    );
+}
+
+export default function Wrapper() {
+    const [searchParams] = useSearchParams();
+    if (searchParams.has("group")) {
+        return <AddAvails />;
+    } else {
+        return <Avails />;
+    }
+}
