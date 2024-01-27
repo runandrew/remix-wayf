@@ -78,6 +78,25 @@ export default function MeetupDetails() {
                 </div>
                 <ShareButton params={{ meet }} />
             </div>
+            {dates.length === 0 && (
+                <div className="w-full px-4">
+                    <h5 className="pb-2">
+                        <span className="font-semibold text-lg">
+                            🎉 You&apos;re ready to schedule!
+                        </span>
+                    </h5>
+                    <ul className="list-disc list-inside">
+                        <li>
+                            Click &apos;Add Availability&apos; to set days you
+                            are free
+                        </li>
+                        <li>
+                            Share this link with your friends so they can
+                            schedule
+                        </li>
+                    </ul>
+                </div>
+            )}
             <div className="w-full pb-4">
                 {dates.map((date) => (
                     <div key={date.day} className="py-2">
