@@ -66,13 +66,13 @@ const Avails = () => {
             </Form>
             {Object.keys(meet.availabilities).length !== 0 && (
                 <div className="w-full">
-                    <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <h3 className="scroll-m-20 text-xl font-semibold tracking-tight pb-2">
                         Returning?
                     </h3>
                     <div>
                         {Object.keys(meet.availabilities).map((group) => {
                             return (
-                                <div key={group} className="py-2">
+                                <div key={group} className="py-1">
                                     <div className="flex flex-row items-center gap-4">
                                         <h4 className="scroll-m-20 text-lg tracking-tight">
                                             {group}
@@ -84,9 +84,9 @@ const Avails = () => {
                                                 setSearchParams(
                                                     new URLSearchParams({
                                                         group: encodeURIComponent(
-                                                            group,
+                                                            group
                                                         ),
-                                                    }),
+                                                    })
                                                 )
                                             }
                                         >
@@ -113,7 +113,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
     await addMeetAvails(
         params.uuid,
         decodeURIComponent(group),
-        dates.split(",").map((d) => parseISO(d)),
+        dates.split(",").map((d) => parseISO(d))
     );
 
     return redirect(`/m/${params.uuid}`);
@@ -125,7 +125,7 @@ function AddAvails() {
     const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
     const dates = meet.availabilities[decodedGroup] ?? [];
     const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-        dates.map((date) => parseISO(date.day)),
+        dates.map((date) => parseISO(date.day))
     );
     const navigation = useNavigation();
 
