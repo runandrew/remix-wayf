@@ -13,8 +13,8 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
-    const m = create((formData.get("name") as string).trim()); // use zod
-    return redirect(`/m/${(await m).uuid}`);
+    const m = await create((formData.get("name") as string).trim()); // use zod
+    return redirect(`/m/${m.uuid}`);
 };
 
 export default function Index() {
