@@ -1,3 +1,4 @@
+import { Separator } from "@/components/ui/separator";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
@@ -10,16 +11,15 @@ import {
     ScrollRestoration,
     useLoaderData,
 } from "@remix-run/react";
-import styles from "./tailwind.css";
 import clsx from "clsx";
 import {
     PreventFlashOnWrongTheme,
     ThemeProvider,
     useTheme,
 } from "remix-themes";
-import { themeSessionResolver } from "./sessions.server";
-import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "./components/ModeToggle";
+import { themeSessionResolver } from "./sessions.server";
+import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
     { rel: "stylesheet", href: styles },
@@ -63,13 +63,13 @@ function App() {
                 <Links />
             </head>
             <body>
-                <main className="flex min-h-dvh items-center justify-between flex-col max-w-sm mx-auto px-4">
+                <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-between px-4">
                     <Outlet />
-                    <div className="w-full flex flex-col items-center justify-between gap-1 pt-8">
+                    <div className="flex w-full flex-col items-center justify-between gap-1 pt-8">
                         <Separator />
-                        <div className="w-full flex flex-row items-center justify-between pb-4">
+                        <div className="flex w-full flex-row items-center justify-between pb-4">
                             <Link to={`/`}>
-                                <span className="scroll-m-20 text-m font-semibold tracking-tight">
+                                <span className="text-m scroll-m-20 font-semibold tracking-tight">
                                     WAYF
                                 </span>
                             </Link>

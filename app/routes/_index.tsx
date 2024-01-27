@@ -1,7 +1,7 @@
-import { Input } from "@/components/ui/input";
-import { Form, redirect, useNavigation } from "@remix-run/react";
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { create } from "@/api/meet";
+import { Input } from "@/components/ui/input";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Form, redirect, useNavigation } from "@remix-run/react";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const meta: MetaFunction = () => {
@@ -21,11 +21,11 @@ export default function Index() {
     const navigation = useNavigation();
 
     return (
-        <div className="flex items-center flex-col gap-4 pt-20 w-full">
+        <div className="flex w-full flex-col items-center gap-4 pt-20">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 WAYF
             </h1>
-            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
+            <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
                 Scheduling meetups <i>simplified</i>
             </h4>
             <Form method="post">

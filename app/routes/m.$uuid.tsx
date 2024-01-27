@@ -63,11 +63,11 @@ export default function MeetupDetails() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex items-center flex-col gap-4 pt-20 w-full">
+        <div className="flex w-full flex-col items-center gap-4 pt-20">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
-            <div className="pb-4 flex flex-row">
+            <div className="flex flex-row pb-4">
                 <div className="pr-4">
                     <Button
                         disabled={navigation.state === "loading"}

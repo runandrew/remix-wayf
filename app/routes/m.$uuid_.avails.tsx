@@ -1,23 +1,23 @@
+import { addMeetAvails, findMeet } from "@/api/meet";
+import { SubmitButton } from "@/components/SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import type {
     ActionFunctionArgs,
     LoaderFunctionArgs,
     MetaFunction,
 } from "@remix-run/node";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
-import { SubmitButton } from "~/components/SubmitButton";
-import { addMeetAvails, findMeet } from "@/api/meet";
-import { redirect, json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
-    useLoaderData,
     Form,
+    useLoaderData,
     useNavigation,
     useSearchParams,
 } from "@remix-run/react";
 import { parseISO } from "date-fns/parseISO";
+import { Pencil } from "lucide-react";
 import React from "react";
-import { Calendar } from "@/components/ui/calendar";
 import z from "zod";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -47,7 +47,7 @@ const Avails = () => {
     const [_, setSearchParams] = useSearchParams();
 
     return (
-        <div className="flex items-center flex-col gap-4 pt-20 w-full">
+        <div className="flex w-full flex-col items-center gap-4 pt-20">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
@@ -84,9 +84,9 @@ const Avails = () => {
                                                 setSearchParams(
                                                     new URLSearchParams({
                                                         group: encodeURIComponent(
-                                                            group
+                                                            group,
                                                         ),
-                                                    })
+                                                    }),
                                                 )
                                             }
                                         >
@@ -113,7 +113,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
     await addMeetAvails(
         params.uuid,
         decodeURIComponent(group),
-        dates.split(",").map((d) => parseISO(d))
+        dates.split(",").map((d) => parseISO(d)),
     );
 
     return redirect(`/m/${params.uuid}`);
@@ -125,16 +125,16 @@ function AddAvails() {
     const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
     const dates = meet.availabilities[decodedGroup] ?? [];
     const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-        dates.map((date) => parseISO(date.day))
+        dates.map((date) => parseISO(date.day)),
     );
     const navigation = useNavigation();
 
     return (
-        <div className="flex items-center flex-col gap-4 pt-20 w-full">
+        <div className="flex w-full flex-col items-center gap-4 pt-20">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
                 {meet.name}
             </h1>
-            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
+            <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
                 {`When are you free, ${decodedGroup}?`}
             </h4>
             <Form method="post">
@@ -144,7 +144,7 @@ function AddAvails() {
                     readOnly={true}
                     value={multiDates?.map((d) => d.toISOString())}
                 />
-                <div className="flex flex-col gap-4 items-center">
+                <div className="flex flex-col items-center gap-4">
                     <Calendar
                         mode="multiple"
                         selected={multiDates}
