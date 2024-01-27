@@ -1,11 +1,5 @@
 import supabase from "@/api/supabase";
-import { LRUCache } from "lru-cache";
 import { Meet } from "@/types";
-
-const cache = new LRUCache<string, Meet>({
-    max: 200,
-    ttl: 1000 * 60 * 60 * 24, // 1 day
-});
 
 export async function create(name: string): Promise<Meet> {
     const { data, error } = await supabase
@@ -17,18 +11,10 @@ export async function create(name: string): Promise<Meet> {
         throw error;
     }
 
-    const m = data[0];
-
-    cache.set(m.uuid, m);
-
-    return m;
+    return data[0];
 }
 
 export async function findMeet(uuid: string): Promise<Meet> {
-    if (cache.has(uuid)) {
-        return Promise.resolve(cache.get(uuid) as Meet);
-    }
-
     const res = await supabase
         .from("meet")
         .select("*")
@@ -38,8 +24,6 @@ export async function findMeet(uuid: string): Promise<Meet> {
     if (res.error) {
         throw res.error;
     }
-
-    cache.set(uuid, res.data);
 
     return res.data;
 }
@@ -59,16 +43,15 @@ export async function addMeetAvails(
         })),
     };
 
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from("meet")
         .update({ availabilities: updatedAvails })
-        .eq("uuid", uuid);
-
-    cache.delete(uuid);
+        .eq("uuid", uuid)
+        .single();
 
     if (error) {
         throw error;
     }
 
-    return;
+    return data;
 }
