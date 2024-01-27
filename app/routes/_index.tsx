@@ -2,7 +2,13 @@ import { create } from "@/api/meet";
 import { Input } from "@/components/ui/input";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form, redirect, useNavigation } from "@remix-run/react";
-import { SubmitButton } from "~/components/SubmitButton";
+import { SubmitButton } from "@/components/SubmitButton";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 export const meta: MetaFunction = () => {
     return [
@@ -45,6 +51,25 @@ export default function Index() {
                     />
                 </div>
             </Form>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="link">About</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                    <h5 className="font-semibold pb-1">
+                        WAYF: When are you free?
+                    </h5>
+                    <p>
+                        Scheduling applications have become increasingly
+                        complicated. They are littered with unnecessary
+                        features, and demand user accounts. WAYF focuses on a
+                        user-friendly experience to find the perfect meeting
+                        times for everyone involved. Say goodbye to unnecessary
+                        complexities and hello to efficient, stress-free
+                        scheduling.
+                    </p>
+                </PopoverContent>
+            </Popover>
         </div>
     );
 }
