@@ -19,7 +19,6 @@ import {
 } from "remix-themes";
 import { themeSessionResolver } from "./sessions.server";
 import { Separator } from "@/components/ui/separator";
-import { Plus } from "lucide-react";
 import { ModeToggle } from "./components/ModeToggle";
 
 export const links: LinksFunction = () => [

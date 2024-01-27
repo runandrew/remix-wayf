@@ -32,6 +32,7 @@ export const loader = async ({ params: raw }: LoaderFunctionArgs) => {
 const Avails = () => {
     const { meet } = useLoaderData<typeof loader>();
     const navigation = useNavigation();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, setSearchParams] = useSearchParams();
 
     return (

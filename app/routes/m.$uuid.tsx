@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import {
-    Link,
     useLoaderData,
+    useNavigate,
     useNavigation,
     useParams,
 } from "@remix-run/react";
@@ -13,9 +13,10 @@ import { formatDate } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
 import { CheckCircle2 } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
+import z from "zod";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-    const meet = await findMeet(params.uuid);
+    const meet = await findMeet(z.string().parse(params.uuid));
     if (!meet) {
         throw new Response("Not Found", { status: 404 });
     }
@@ -52,6 +53,7 @@ export default function MeetupDetails() {
     const dates = availsByDate(meet.availabilities);
     const params = useParams();
     const navigation = useNavigation();
+    const navigate = useNavigate();
 
     return (
         <div className="flex items-center flex-col gap-4 pt-20 w-full">
@@ -60,10 +62,11 @@ export default function MeetupDetails() {
             </h1>
             <div className="pb-4 flex flex-row">
                 <div className="pr-4">
-                    <Button disabled={navigation.state === "loading"} asChild>
-                        <Link to={`/m/${params.uuid}/avails`}>
-                            Add Availability
-                        </Link>
+                    <Button
+                        disabled={navigation.state === "loading"}
+                        onClick={() => navigate(`/m/${params.uuid}/avails`)}
+                    >
+                        Add Availability
                     </Button>
                 </div>
                 <ShareButton params={{ meet }} />
