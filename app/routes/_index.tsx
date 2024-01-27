@@ -61,8 +61,8 @@ export default function Index() {
                     </h5>
                     <p>
                         Scheduling applications have become increasingly
-                        complicated. They are littered with unnecessary
-                        features, and demand user accounts. WAYF focuses on a
+                        complicated. They are littered with unnecessary features
+                        and demand user accounts. WAYF focuses on a
                         user-friendly experience to find the perfect meeting
                         times for everyone involved. Say goodbye to unnecessary
                         complexities and hello to efficient, stress-free
