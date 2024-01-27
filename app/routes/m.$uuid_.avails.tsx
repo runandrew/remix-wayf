@@ -65,8 +65,8 @@ const Avails = () => {
                 </div>
             </Form>
             {Object.keys(meet.availabilities).length !== 0 && (
-                <>
-                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                <div className="w-full">
+                    <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
                         Returning?
                     </h3>
                     <div>
@@ -74,7 +74,7 @@ const Avails = () => {
                             return (
                                 <div key={group} className="py-2">
                                     <div className="flex flex-row items-center gap-4">
-                                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                                        <h4 className="scroll-m-20 text-lg tracking-tight">
                                             {group}
                                         </h4>
                                         <Button
@@ -97,7 +97,7 @@ const Avails = () => {
                             );
                         })}
                     </div>
-                </>
+                </div>
             )}
         </div>
     );
