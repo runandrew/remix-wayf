@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
     useLoaderData,
     useNavigate,
@@ -14,6 +14,13 @@ import { parseISO } from "date-fns/parseISO";
 import { CheckCircle2 } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import z from "zod";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+    return [
+        { title: `${data?.meet.name ?? "When are you free?"} | WAYF` },
+        { name: "description", content: "Scheduling, simplified" },
+    ];
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const meet = await findMeet(z.string().parse(params.uuid));

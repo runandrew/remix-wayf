@@ -1,4 +1,8 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+    ActionFunctionArgs,
+    LoaderFunctionArgs,
+    MetaFunction,
+} from "@remix-run/node";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
@@ -15,6 +19,13 @@ import { parseISO } from "date-fns/parseISO";
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import z from "zod";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+    return [
+        { title: `${data?.meet.name ?? "When are you free?"} | WAYF` },
+        { name: "description", content: "Scheduling, simplified" },
+    ];
+};
 
 const paramSchema = z.object({
     uuid: z.string(),
