@@ -20,6 +20,7 @@ import {
 import { ModeToggle } from "./components/ModeToggle";
 import { themeSessionResolver } from "./sessions.server";
 import styles from "./tailwind.css";
+import { Analytics } from "@vercel/analytics/react";
 
 export const links: LinksFunction = () => [
     { rel: "stylesheet", href: styles },
@@ -80,6 +81,7 @@ function App() {
                 <ScrollRestoration />
                 <Scripts />
                 <LiveReload />
+                <Analytics />
             </body>
         </html>
     );
