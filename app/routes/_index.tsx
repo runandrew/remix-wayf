@@ -39,7 +39,7 @@ export default function Index() {
                     <Input
                         name="name"
                         type="name"
-                        placeholder="Book Club 📚"
+                        placeholder="Name, e.g. Book Club 📚"
                         autoComplete="off"
                         autoCapitalize="words"
                         required
