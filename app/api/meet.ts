@@ -1,5 +1,5 @@
 import supabase from "@/api/supabase";
-import { Meet } from "@/types";
+import { Availability, Meet } from "@/types";
 
 export async function create(name: string): Promise<Meet> {
     const { data, error } = await supabase
@@ -25,7 +25,23 @@ export async function findMeet(uuid: string): Promise<Meet> {
         throw res.error;
     }
 
-    return res.data;
+    // Clean up dates to only the yyyy-mm-dd
+    const cleanMeet = {
+        ...res.data,
+        availabilities: Object.entries<Availability[]>(
+            res.data.availabilities
+        ).reduce(
+            (acc, [key, avails]) => ({
+                ...acc,
+                [key]: avails.map((a) => ({
+                    day: a.day.slice(0, 10), // Creates "yyyy-MM-dd"
+                })),
+            }),
+            {}
+        ),
+    };
+
+    return cleanMeet;
 }
 
 export async function addMeetAvails(
