@@ -54,9 +54,11 @@ export async function addMeetAvails(
 
     const updatedAvails = {
         ...avails,
-        [group]: dates.map((d) => ({
-            day: d.toISOString(),
-        })),
+        [group]: dates
+            .filter((d) => d.toString() !== "Invalid Date")
+            .map((d) => ({
+                day: d.toISOString().slice(0, 10), // Creates "yyyy-MM-dd"
+            })),
     };
 
     const { data, error } = await supabase
