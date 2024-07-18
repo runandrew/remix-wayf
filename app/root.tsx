@@ -22,6 +22,8 @@ import { themeSessionResolver } from "./sessions.server";
 import styles from "./tailwind.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/remix";
+import { Button } from "./components/ui/button";
+import { Github } from "lucide-react";
 
 export const links: LinksFunction = () => [
     { rel: "stylesheet", href: styles },
@@ -75,7 +77,18 @@ function App() {
                                     WAYF
                                 </span>
                             </Link>
-                            <ModeToggle />
+                            <div className="flex flex-row items-center">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <a
+                                        href="https://github.com/runandrew/remix-wayf"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Github className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" />
+                                    </a>
+                                </Button>
+                                <ModeToggle />
+                            </div>
                         </div>
                     </div>
                 </main>
