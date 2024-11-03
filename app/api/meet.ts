@@ -1,7 +1,8 @@
-import supabase from "@/api/supabase";
+import { createSupabaseClient } from "@/api/supabase";
 import { Availability, Meet } from "@/types";
 
 export async function create(name: string): Promise<Meet> {
+  const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("meet")
     .insert([{ name }])
@@ -15,6 +16,7 @@ export async function create(name: string): Promise<Meet> {
 }
 
 export async function findMeet(uuid: string): Promise<Meet> {
+  const supabase = createSupabaseClient();
   console.log("findMeet", uuid);
   const res = await supabase
     .from("meet")
@@ -56,6 +58,7 @@ export async function addMeetAvails(
   group: string,
   dates: Date[]
 ): Promise<void> {
+  const supabase = createSupabaseClient();
   const meet = await findMeet(uuid);
   const avails = meet.availabilities;
 
