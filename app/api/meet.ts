@@ -17,20 +17,15 @@ export async function create(name: string): Promise<Meet> {
 
 export async function findMeet(uuid: string): Promise<Meet> {
   const supabase = createSupabaseClient();
-  console.log("findMeet", uuid);
   const res = await supabase
     .from("meet")
     .select("*")
     .eq("uuid", uuid)
     .maybeSingle();
 
-  console.log("findMeet res", res);
-
   if (res.error) {
     throw res.error;
   }
-
-  console.log("findMeet cleanMeet", res.data);
 
   // Clean up dates to only the yyyy-mm-dd
   // Hack to deal with data in the database that has time
