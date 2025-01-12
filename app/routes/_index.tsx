@@ -32,7 +32,7 @@ function WeHaveMovedBanner() {
     if (!visible) return null;
   
     return (
-        <Alert className="bg-blue-100 border-blue-500 text-blue-800 relative">
+        <Alert className="bg-blue-100 dark:bg-blue-950 border-blue-500 text-blue-800 dark:text-blue-100 relative">
           <div className="flex items-center justify-between w-full">
             <div>
               <AlertTitle>We&apos;ve Moved!</AlertTitle>
@@ -42,7 +42,7 @@ function WeHaveMovedBanner() {
                   href="https://wayf.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline font-semibold"
+                  className="underline font-semibold hover:text-blue-600 dark:hover:text-blue-300"
                 >
                   wayf.vercel.app
                 </a>. Please update your bookmarks.
@@ -50,7 +50,7 @@ function WeHaveMovedBanner() {
             </div>
             <button
               onClick={() => setVisible(false)}
-              className="absolute top-2 right-2 p-1 hover:bg-blue-200 rounded-full"
+              className="absolute top-2 right-2 p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full"
               aria-label="Close banner"
             >
               <X className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function Index() {
                     </p>
                 </PopoverContent>
             </Popover>
-            <WeHaveMovedBanner />
-        </div>
+        <WeHaveMovedBanner />
+    </div>
     );
 }
