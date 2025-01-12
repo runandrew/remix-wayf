@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { create } from "@/api/meet";
 import { Input } from "@/components/ui/input";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
@@ -8,7 +9,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -22,6 +25,40 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const m = await create((formData.get("name") as string).trim()); // use zod
     return redirect(`/m/${m.uuid}`);
 };
+
+function WeHaveMovedBanner() {
+    const [visible, setVisible] = useState(true);
+  
+    if (!visible) return null;
+  
+    return (
+        <Alert className="bg-blue-100 border-blue-500 text-blue-800 relative">
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <AlertTitle>We&apos;ve Moved!</AlertTitle>
+              <AlertDescription>
+                Our website is now at{" "}
+                <a
+                  href="https://wayf.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-semibold"
+                >
+                  wayf.vercel.app
+                </a>. Please update your bookmarks.
+              </AlertDescription>
+            </div>
+            <button
+              onClick={() => setVisible(false)}
+              className="absolute top-2 right-2 p-1 hover:bg-blue-200 rounded-full"
+              aria-label="Close banner"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </Alert>
+    );
+}
 
 export default function Index() {
     const navigation = useNavigation();
@@ -70,6 +107,7 @@ export default function Index() {
                     </p>
                 </PopoverContent>
             </Popover>
+            <WeHaveMovedBanner />
         </div>
     );
 }
