@@ -84,7 +84,7 @@ const Avails = () => {
                         setSearchParams(
                           new URLSearchParams({
                             group: encodeURIComponent(group),
-                          })
+                          }),
                         )
                       }
                     >
@@ -111,7 +111,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
   await updateMeetAvails(
     params.uuid,
     decodeURIComponent(group),
-    dates.split(",").map((d) => parseISO(d))
+    dates.split(",").map((d) => parseISO(d)),
   );
 
   return redirect(`/m/${params.uuid}`);
@@ -123,7 +123,7 @@ function AddAvails() {
   const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
   const dates = meet.availabilities[decodedGroup] ?? [];
   const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-    dates.map((date) => parseISO(date.day))
+    dates.map((date) => parseISO(date.day)),
   );
   const navigation = useNavigation();
 
