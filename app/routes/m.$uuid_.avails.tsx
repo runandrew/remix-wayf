@@ -1,4 +1,4 @@
-import { addMeetAvails, findMeet } from "@/api/meet";
+import { updateMeetAvails, find } from "@/api/services/meet";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,7 +33,7 @@ const paramSchema = z.object({
 
 export const loader = async ({ params: raw }: LoaderFunctionArgs) => {
   const params = paramSchema.parse(raw);
-  const meet = await findMeet(params.uuid);
+  const meet = await find(params.uuid);
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -84,7 +84,7 @@ const Avails = () => {
                         setSearchParams(
                           new URLSearchParams({
                             group: encodeURIComponent(group),
-                          })
+                          }),
                         )
                       }
                     >
@@ -108,10 +108,10 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
   const group = url.searchParams.get("group") ?? "";
   const dates = formData.get("dates")?.toString() ?? "";
 
-  await addMeetAvails(
+  await updateMeetAvails(
     params.uuid,
     decodeURIComponent(group),
-    dates.split(",").map((d) => parseISO(d))
+    dates.split(",").map((d) => parseISO(d)),
   );
 
   return redirect(`/m/${params.uuid}`);
@@ -123,7 +123,7 @@ function AddAvails() {
   const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
   const dates = meet.availabilities[decodedGroup] ?? [];
   const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-    dates.map((date) => parseISO(date.day))
+    dates.map((date) => parseISO(date.day)),
   );
   const navigation = useNavigation();
 

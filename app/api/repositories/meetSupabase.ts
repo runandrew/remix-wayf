@@ -1,11 +1,11 @@
-import { createSupabaseClient } from "@/api/supabase";
-import { Availability, Meet } from "@/types";
+import { createSupabaseClient } from "~/api/repositories/supabaseConfig";
+import { Availabilities, Availability, Meet } from "@/types";
 
-export async function create(name: string): Promise<Meet> {
+export async function create(name: string, uuid: string): Promise<Meet> {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("meet")
-    .insert([{ name }])
+    .insert([{ name, uuid }])
     .select();
 
   if (error) {
@@ -15,7 +15,7 @@ export async function create(name: string): Promise<Meet> {
   return data[0];
 }
 
-export async function findMeet(uuid: string): Promise<Meet> {
+export async function find(uuid: string): Promise<Meet> {
   const supabase = createSupabaseClient();
   const res = await supabase
     .from("meet")
@@ -33,7 +33,7 @@ export async function findMeet(uuid: string): Promise<Meet> {
   const cleanMeet = {
     ...res.data,
     availabilities: Object.entries<Availability[]>(
-      res.data.availabilities
+      res.data.availabilities,
     ).reduce(
       (acc, [key, avails]) => ({
         ...acc,
@@ -41,40 +41,33 @@ export async function findMeet(uuid: string): Promise<Meet> {
           day: a.day.slice(0, 10), // Creates "yyyy-MM-dd"
         })),
       }),
-      {}
+      {},
     ),
   };
 
   return cleanMeet;
 }
 
-export async function addMeetAvails(
+export async function updateAvailabilities(
   uuid: string,
-  group: string,
-  dates: Date[]
-): Promise<void> {
+  availabilities: Availabilities,
+): Promise<Meet> {
   const supabase = createSupabaseClient();
-  const meet = await findMeet(uuid);
-  const avails = meet.availabilities;
 
-  const updatedAvails = {
-    ...avails,
-    [group]: dates
-      .filter((d) => d.toString() !== "Invalid Date")
-      .map((d) => ({
-        day: d.toISOString().slice(0, 10), // Creates "yyyy-MM-dd"
-      })),
-  };
+  console.log("Supabase updating: ", { uuid, availabilities });
 
   const { data, error } = await supabase
     .from("meet")
-    .update({ availabilities: updatedAvails })
+    .update({ availabilities })
     .eq("uuid", uuid)
+    .select()
     .single();
 
   if (error) {
     throw error;
   }
+
+  console.log("Supabase updated: ", data);
 
   return data;
 }
