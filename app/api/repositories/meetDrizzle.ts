@@ -5,12 +5,11 @@ import { Meet, Availabilities } from "@/types";
 
 type DrizzleMeet = typeof meetTable.$inferSelect;
 
-// Create meet
-export async function create(name: string): Promise<Meet> {
+export async function create(name: string, uuid: string): Promise<Meet> {
   const db = createDrizzleClient();
   const [meet]: DrizzleMeet[] = await db
     .insert(meetTable)
-    .values({ name })
+    .values({ name, uuid })
     .returning();
 
   return meet;
