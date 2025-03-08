@@ -46,7 +46,7 @@ export async function updateAvailabilities(
   const db = createDrizzleClient();
   const [meet]: DrizzleMeet[] = await db
     .update(meetTable)
-    .set({ availabilities })
+    .set({ availabilities, updatedAt: new Date() })
     .where(eq(meetTable.externalId, externalId))
     .returning();
 
