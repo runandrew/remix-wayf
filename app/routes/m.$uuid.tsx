@@ -6,7 +6,7 @@ import {
     useParams,
 } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import { findMeet } from "@/db";
+import { find } from "@/api/services/meet";
 import { Button } from "@/components/ui/button";
 import { Availabilities } from "@/types";
 import { formatDate } from "date-fns/format";
@@ -23,7 +23,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-    const meet = await findMeet(z.string().parse(params.uuid));
+    const meet = await find(z.string().parse(params.uuid));
     if (!meet) {
         throw new Response("Not Found", { status: 404 });
     }

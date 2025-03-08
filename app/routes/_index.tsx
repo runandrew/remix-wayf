@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { create } from "@/db";
+import { create } from "@/api/services/meet";
 import { Input } from "@/components/ui/input";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form, redirect, useNavigation } from "@remix-run/react";

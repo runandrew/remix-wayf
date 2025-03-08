@@ -1,4 +1,4 @@
-import { addMeetAvails, findMeet } from "@/db";
+import { updateMeetAvails, find } from "@/api/services/meet";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,7 +33,7 @@ const paramSchema = z.object({
 
 export const loader = async ({ params: raw }: LoaderFunctionArgs) => {
   const params = paramSchema.parse(raw);
-  const meet = await findMeet(params.uuid);
+  const meet = await find(params.uuid);
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -108,7 +108,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
   const group = url.searchParams.get("group") ?? "";
   const dates = formData.get("dates")?.toString() ?? "";
 
-  await addMeetAvails(
+  await updateMeetAvails(
     params.uuid,
     decodeURIComponent(group),
     dates.split(",").map((d) => parseISO(d))
