@@ -1,4 +1,4 @@
-import { addMeetAvails, findMeet } from "@/api/meet";
+import { addMeetAvails, findMeet } from "@/db";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";

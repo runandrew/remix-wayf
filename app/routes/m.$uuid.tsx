@@ -6,7 +6,7 @@ import {
     useParams,
 } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import { findMeet } from "~/api/meet";
+import { findMeet } from "@/db";
 import { Button } from "@/components/ui/button";
 import { Availabilities } from "@/types";
 import { formatDate } from "date-fns/format";
