@@ -1,12 +1,7 @@
 import "dotenv/config";
 import { eq } from "drizzle-orm";
-import { meetTable } from "./drizzleSchema";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { createDrizzleClient, meetTable } from "./drizzleConfig";
 import { Meet, Availabilities } from "@/types";
-
-function createDrizzleClient() {
-  return drizzle(process.env.DATABASE_URL!);
-}
 
 type DrizzleMeet = typeof meetTable.$inferSelect;
 

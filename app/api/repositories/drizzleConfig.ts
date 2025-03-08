@@ -6,7 +6,12 @@ import {
   jsonb,
   uuid,
 } from "drizzle-orm/pg-core";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Availabilities } from "@/types";
+
+export function createDrizzleClient() {
+  return drizzle(process.env.DATABASE_URL!);
+}
 
 export const meetTable = pgTable("meet", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
