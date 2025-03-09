@@ -4,23 +4,25 @@ import {
   find as drizzleFind,
   updateAvailabilities as drizzleUpdateAvailabilities,
 } from "@/api/repositories/meetDrizzle";
+import ShortUniqueId from "short-unique-id";
 
 export async function create(name: string): Promise<Meet> {
-  const uuid = crypto.randomUUID();
+  const uid = new ShortUniqueId({ length: 10 });
+  const externalId = uid.rnd();
 
-  return drizzleCreate(name, uuid);
+  return drizzleCreate(name, externalId);
 }
 
-export async function find(uuid: string): Promise<Meet> {
-  return drizzleFind(uuid);
+export async function find(externalId: string): Promise<Meet> {
+  return drizzleFind(externalId);
 }
 
 export async function updateMeetAvails(
-  uuid: string,
+  externalId: string,
   group: string,
   dates: Date[],
 ): Promise<Meet> {
-  const meet = await find(uuid);
+  const meet = await find(externalId);
   const avails = meet.availabilities;
 
   // Update availabilities
@@ -33,7 +35,7 @@ export async function updateMeetAvails(
       })),
   };
 
-  const updated = await drizzleUpdateAvailabilities(uuid, updatedAvails);
+  const updated = await drizzleUpdateAvailabilities(externalId, updatedAvails);
 
   if (!updated) {
     throw new Error("Failed to update availabilities");
