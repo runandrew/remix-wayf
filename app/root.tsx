@@ -1,3 +1,4 @@
+import { captureRemixErrorBoundaryError } from "@sentry/remix";
 import { Separator } from "@/components/ui/separator";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
@@ -10,6 +11,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import clsx from "clsx";
 import {
@@ -37,6 +39,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     theme: getTheme(),
   };
 }
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+  return <div>Something went wrong</div>;
+};
 
 export default function AppWithProviders() {
   const data = useLoaderData<typeof loader>();
