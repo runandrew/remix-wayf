@@ -19,7 +19,7 @@ export const meetTable = pgTable("meet", {
     .$type<Availabilities>()
     .notNull()
     .default({}),
-  externalId: varchar("external_id").notNull(),
+  externalId: varchar("external_id").notNull().unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
