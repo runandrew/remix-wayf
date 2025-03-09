@@ -10,6 +10,8 @@ function drizzleMeetToMeet(meet: DrizzleMeet): Meet {
     uuid: meet.externalId,
     name: meet.name,
     availabilities: meet.availabilities,
+    createdAt: meet.createdAt,
+    updatedAt: meet.updatedAt,
   };
 }
 
@@ -52,6 +54,33 @@ export async function updateAvailabilities(
 
   if (!meet) {
     throw new Error("Meet not found");
+  }
+
+  return drizzleMeetToMeet(meet);
+}
+
+export async function upsertMeet(inputMeet: Meet) {
+  const db = createDrizzleClient();
+
+  const m = {
+    name: inputMeet.name,
+    externalId: inputMeet.uuid,
+    availabilities: inputMeet.availabilities,
+    createdAt: inputMeet.createdAt,
+    updatedAt: inputMeet.updatedAt,
+  };
+
+  const [meet]: DrizzleMeet[] = await db
+    .insert(meetTable)
+    .values(m)
+    .onConflictDoUpdate({
+      target: [meetTable.externalId],
+      set: m,
+    })
+    .returning();
+
+  if (!meet) {
+    throw new Error("Failed to upsert meet");
   }
 
   return drizzleMeetToMeet(meet);
