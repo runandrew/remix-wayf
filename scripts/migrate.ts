@@ -19,6 +19,7 @@ async function migrateMeet(uuid: string) {
   console.log(`Meet set to migrated in Supabase: ${meet.name}`);
 }
 
+// To run this script: `npx tsx scripts/migrate.ts`
 async function main() {
   let uuids = await supabaseListUnmigratedUuids(20);
 
