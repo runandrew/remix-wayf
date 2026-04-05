@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:24
+    volumes:
+      - ./:/workspace
+    command: sleep infinity
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - HOST=0.0.0.0
