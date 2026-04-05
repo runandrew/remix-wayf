@@ -20,7 +20,7 @@ export async function find(externalId: string): Promise<Meet> {
 export async function updateMeetAvails(
   externalId: string,
   group: string,
-  dates: Date[],
+  dates: string[],
 ): Promise<Meet> {
   const meet = await find(externalId);
   const avails = meet.availabilities;
@@ -29,9 +29,9 @@ export async function updateMeetAvails(
   const updatedAvails: Availabilities = {
     ...avails,
     [group]: dates
-      .filter((d) => d.toString() !== "Invalid Date")
+      .filter((d) => d.trim() !== "" && !isNaN(Date.parse(d)))
       .map((d) => ({
-        day: d.toISOString().slice(0, 10), // Updates date to "yyyy-MM-dd" format
+        day: d,
       })),
   };
 

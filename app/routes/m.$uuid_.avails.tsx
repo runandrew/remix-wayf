@@ -15,6 +15,7 @@ import {
   useNavigation,
   useSearchParams,
 } from "@remix-run/react";
+import { format } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
 import { Pencil } from "lucide-react";
 import React from "react";
@@ -111,7 +112,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
   await updateMeetAvails(
     params.uuid,
     decodeURIComponent(group),
-    dates.split(",").map((d) => parseISO(d)),
+    dates.split(",").filter(Boolean),
   );
 
   return redirect(`/m/${params.uuid}`);
@@ -123,7 +124,7 @@ function AddAvails() {
   const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
   const dates = meet.availabilities[decodedGroup] ?? [];
   const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-    dates.map((date) => parseISO(date.day)),
+    dates.map((date: { day: string }) => parseISO(date.day)),
   );
   const navigation = useNavigation();
 
@@ -140,7 +141,7 @@ function AddAvails() {
           name="dates"
           className="hidden"
           readOnly={true}
-          value={multiDates?.map((d) => d.toISOString())}
+          value={multiDates?.map((d) => format(d, "yyyy-MM-dd"))}
         />
         <div className="flex flex-col items-center gap-4">
           <Calendar
