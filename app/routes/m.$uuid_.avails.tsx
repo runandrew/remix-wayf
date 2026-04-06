@@ -141,6 +141,8 @@ function AddAvails() {
           name="dates"
           className="hidden"
           readOnly={true}
+          // Note, avoid toISOString as that can cause timezone issue due to it always converting to UTC. 
+          // Instead, format the users local date directly without timezone conversion.
           value={multiDates?.map((d) => format(d, "yyyy-MM-dd"))}
         />
         <div className="flex flex-col items-center gap-4">
