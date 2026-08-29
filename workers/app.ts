@@ -25,8 +25,13 @@ function isHomepageGet(request: Request): boolean {
   return new URL(request.url).pathname === "/";
 }
 
+// Bump when homepage HTML or the theme boot script changes.
+const HOMEPAGE_CACHE_VERSION = "2";
+
 function homepageCacheKey(request: Request): Request {
-  return new Request(new URL("/", request.url).href, { method: "GET" });
+  const url = new URL("/", request.url);
+  url.searchParams.set("v", HOMEPAGE_CACHE_VERSION);
+  return new Request(url.href, { method: "GET" });
 }
 
 function edgeCache(): Cache {

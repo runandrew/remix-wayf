@@ -11,7 +11,14 @@ export function ModeToggle() {
         const root = document.documentElement;
         const next = root.classList.contains("dark") ? "light" : "dark";
         root.classList.toggle("dark", next === "dark");
-        localStorage.setItem("theme", next);
+        const system = matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+        if (next === system) {
+          localStorage.removeItem("theme");
+        } else {
+          localStorage.setItem("theme", next);
+        }
       }}
     >
       <IconSun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
