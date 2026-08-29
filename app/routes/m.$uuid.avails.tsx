@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { getDatabaseUrl } from "@/env";
 import { formatDay, parseDay, startOfToday } from "@/lib/dates";
 import { formErrorMessage } from "@/lib/form-errors";
+import { meetMeta } from "@/lib/seo";
 import type {
   ActionFunctionArgs,
+  HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "react-router";
@@ -22,12 +24,9 @@ import {
 } from "react-router";
 import React from "react";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [
-    { title: `${data?.meet.name ?? "When are you free?"} | WAYF` },
-    { name: "description", content: "Scheduling, simplified" },
-  ];
-};
+export const headers: HeadersFunction = () => ({
+  "X-Robots-Tag": "noindex, nofollow",
+});
 
 function requireId(uuid: string | undefined): string {
   const id = uuid?.trim();
@@ -44,6 +43,12 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   }
   return { meet };
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) =>
+  meetMeta({
+    name: data?.meet.name,
+    pathname: data ? `/m/${data.meet.uuid}/avails` : "/m/",
+  });
 
 const Avails = () => {
   const { meet } = useLoaderData<typeof loader>();
@@ -140,7 +145,10 @@ export const action = async ({
     if (error instanceof Response) {
       throw error;
     }
-    return redirect(`/m/${id}/avails?group=${encodeURIComponent(group)}&error=save`, 303);
+    return redirect(
+      `/m/${id}/avails?group=${encodeURIComponent(group)}&error=save`,
+      303,
+    );
   }
 
   return redirect(`/m/${id}`, 303);

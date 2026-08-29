@@ -15,6 +15,8 @@ import stylesheet from "./tailwind.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+  { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+  { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
 ];
 
 const themeScript = `(() => {
@@ -40,6 +42,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="theme-color"
+          content="#F3EEE4"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#231E19"
+          media="(prefers-color-scheme: dark)"
+        />
         <Meta />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Links />

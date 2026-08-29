@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+Disallow: /m/
+
+# AI search and user-requested retrieval
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /m/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /m/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /m/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /m/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /m/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /m/
+
+Sitemap: https://wayf.quietlymadesoftware.com/sitemap.xml
+
+# Machine-readable summary for agents
+# https://wayf.quietlymadesoftware.com/llms.txt
