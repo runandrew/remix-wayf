@@ -1,5 +1,5 @@
+import { IconSpinner } from "@/components/icons";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
 
 export function SubmitButton({
   text,
@@ -16,7 +16,7 @@ export function SubmitButton({
       aria-disabled={submitting}
       disabled={submitting || disabled}
     >
-      {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {submitting && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
       {text}
     </Button>
   );

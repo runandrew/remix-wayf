@@ -1,16 +1,11 @@
+import { Availabilities } from "@/types";
 import {
   integer,
-  pgTable,
-  varchar,
-  timestamp,
   jsonb,
+  pgTable,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Availabilities } from "@/types";
-
-export function createDrizzleClient() {
-  return drizzle(process.env.DATABASE_URL!);
-}
 
 export const meetTable = pgTable("meet", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

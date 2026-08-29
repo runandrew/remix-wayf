@@ -1,64 +1,45 @@
-import { Availabilities, Meet } from "@/types";
-import { parseISO, isValid, format } from "date-fns";
 import {
-  create as drizzleCreate,
-  find as drizzleFind,
-  updateAvailabilities as drizzleUpdateAvailabilities,
-} from "@/api/repositories/meetDrizzle";
-import ShortUniqueId from "short-unique-id";
+  create as insertMeet,
+  find as findMeet,
+  mergeAvailabilities,
+} from "@/api/repositories/meet";
+import { isValidDay } from "@/lib/dates";
+import { newExternalId } from "@/lib/id";
+import { Meet } from "@/types";
 
-export async function create(name: string): Promise<Meet> {
-  const uid = new ShortUniqueId({ length: 10 });
-  const externalId = uid.rnd();
-
-  return drizzleCreate(name, externalId);
+export async function create(
+  databaseUrl: string,
+  name: string,
+): Promise<string> {
+  return insertMeet(databaseUrl, name, newExternalId());
 }
 
-export async function find(externalId: string): Promise<Meet> {
-  return drizzleFind(externalId);
-}
-
-// Validate date strings in the format "yyyy-MM-dd" and that it's a valid date. Returns null if these checks fail.
-function normalizeAvailDay(day: string): string | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
-    return null;
-  }
-
-  const parsed = parseISO(day);
-  if (!isValid(parsed)) {
-    return null;
-  }
-
-  // Reject rollover cases like 2024-02-30 -> 2024-03-01
-  if (format(parsed, "yyyy-MM-dd") !== day) {
-    return null;
-  }
-
-  return day;
+export async function find(
+  databaseUrl: string,
+  externalId: string,
+): Promise<Meet | null> {
+  return findMeet(databaseUrl, externalId);
 }
 
 export async function updateMeetAvails(
+  databaseUrl: string,
   externalId: string,
   group: string,
   dates: string[],
-): Promise<Meet> {
-  const meet = await find(externalId);
-  const avails = meet.availabilities;
+): Promise<void> {
+  const days = dates
+    .map((d) => d.trim())
+    .filter(isValidDay)
+    .map((day) => ({ day }));
 
-  // Update availabilities
-  const updatedAvails: Availabilities = {
-    ...avails,
-    [group]: dates
-      .map((d) => normalizeAvailDay(d.trim()))
-      .filter((d): d is string => d !== null)
-      .map((day) => ({ day })),
-  };
-
-  const updated = await drizzleUpdateAvailabilities(externalId, updatedAvails);
+  const updated = await mergeAvailabilities(
+    databaseUrl,
+    externalId,
+    group,
+    days,
+  );
 
   if (!updated) {
-    throw new Error("Failed to update availabilities");
+    throw new Response("Not Found", { status: 404 });
   }
-
-  return updated;
 }

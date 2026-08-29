@@ -10,5 +10,4 @@ services:
       - db
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - HOST=0.0.0.0

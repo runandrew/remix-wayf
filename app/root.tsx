@@ -1,105 +1,86 @@
-import { captureRemixErrorBoundaryError } from "@sentry/remix";
-import { Separator } from "@/components/ui/separator";
-import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { IconGithub } from "@/components/icons";
+import { ModeToggle } from "@/components/ModeToggle";
+import { Button } from "@/components/ui/button";
 import {
+  isRouteErrorResponse,
   Link,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
-  useRouteError,
-} from "@remix-run/react";
-import clsx from "clsx";
-import {
-  PreventFlashOnWrongTheme,
-  ThemeProvider,
-  useTheme,
-} from "remix-themes";
-import { ModeToggle } from "./components/ModeToggle";
-import { themeSessionResolver } from "./sessions.server";
-import styles from "./tailwind.css";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/remix";
-import { Button } from "./components/ui/button";
-import { Github } from "lucide-react";
+} from "react-router";
+import type { LinksFunction } from "react-router";
+import stylesheet from "./tailwind.css?url";
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: styles },
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: stylesheet },
 ];
 
-// Return the theme from the session storage using the loader
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { getTheme } = await themeSessionResolver(request);
-  return {
-    theme: getTheme(),
-  };
-}
+const themeScript = `(()=>{var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")})();`;
 
-export const ErrorBoundary = () => {
-  const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
-  return <div>Something went wrong</div>;
-};
-
-export default function AppWithProviders() {
-  const data = useLoaderData<typeof loader>();
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
-      <App />
-    </ThemeProvider>
-  );
-}
-
-function App() {
-  const data = useLoaderData<typeof loader>();
-  const [theme] = useTheme();
-
-  return (
-    <html lang="en" className={clsx(theme)}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Links />
       </head>
       <body>
-        <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-between px-4">
-          <Outlet />
-          <div className="flex w-full flex-col items-center justify-between gap-1 pt-8">
-            <Separator />
-            <div className="flex w-full flex-row items-center justify-between pb-4">
-              <Link to={`/`}>
-                <span className="text-m scroll-m-20 font-semibold tracking-tight">
-                  WAYF
-                </span>
-              </Link>
-              <div className="flex flex-row items-center">
-                <Button variant="ghost" size="icon" asChild>
-                  <a
-                    href="https://github.com/runandrew/remix-wayf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Github className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" />
-                  </a>
-                </Button>
-                <ModeToggle />
-              </div>
-            </div>
-          </div>
-        </main>
+        {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return (
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-between px-4">
+      <Outlet />
+      <div className="flex w-full flex-col items-center justify-between gap-1 pt-8">
+        <div className="h-[1px] w-full shrink-0 bg-border" />
+        <div className="flex w-full flex-row items-center justify-between pb-4">
+          <Link to="/">
+            <span className="text-m scroll-m-20 font-semibold tracking-tight">
+              WAYF
+            </span>
+          </Link>
+          <div className="flex flex-row items-center">
+            <Button variant="ghost" size="icon" asChild>
+              <a
+                href="https://github.com/runandrew/remix-wayf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <IconGithub className="h-[1.2rem] w-[1.2rem]" />
+              </a>
+            </Button>
+            <ModeToggle />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: unknown }) {
+  const message = isRouteErrorResponse(error)
+    ? error.status === 404
+      ? "Not found"
+      : "Something went wrong"
+    : "Something went wrong";
+
+  return (
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center px-4">
+      <p className="text-lg font-semibold">{message}</p>
+      <Link to="/" className="mt-4 underline">
+        Back to WAYF
+      </Link>
+    </main>
   );
 }

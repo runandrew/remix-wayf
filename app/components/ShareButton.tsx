@@ -1,8 +1,8 @@
-import { Share } from "lucide-react";
+import { IconShare } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Meet } from "@/types";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import { Meet } from "@/types";
 
 const ShareButton = ({ params: { meet } }: { params: { meet: Meet } }) => {
   const { toast } = useToast();
@@ -38,7 +38,7 @@ const ShareButton = ({ params: { meet } }: { params: { meet: Meet } }) => {
     <>
       <Button onClick={share} variant={"outline"}>
         <span className="pr-1">Share</span>
-        <Share size={16} />
+        <IconShare />
       </Button>
       <Toaster />
     </>

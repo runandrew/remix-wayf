@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wayf",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-08-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "wayf.grainlabs.co",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+  // DATABASE_URL is a Worker secret. Do not put it in `vars`.
+  //   npx wrangler secret put DATABASE_URL
+  // Locally, copy .dev.vars.example to .dev.vars.
+  // This config overwrites the existing account Worker named `wayf`
+  // (e5e1317519674e49aaab82528e6ab10a). Keep workers.dev + wayf.grainlabs.co.
+}
