@@ -4,66 +4,67 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Canvas: cream paper. Ink: near-black. Action: pigment cobalt. */
+    --background: 0.95 0.014 85;
+    --foreground: 0.212 0.01 67;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0.95 0.014 85;
+    --card-foreground: 0.212 0.01 67;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0.95 0.014 85;
+    --popover-foreground: 0.212 0.01 67;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0.48 0.16 264;
+    --primary-foreground: 0.95 0.014 85;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 0.91 0.018 82;
+    --secondary-foreground: 0.212 0.01 67;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 38%;
+    --muted: 0.91 0.018 82;
+    --muted-foreground: 0.47 0.03 70;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0.9 0.02 80;
+    --accent-foreground: 0.212 0.01 67;
 
-    --destructive: 0 72% 40%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0.5 0.17 25;
+    --destructive-foreground: 0.95 0.014 85;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0.86 0.02 80;
+    --input: 0.86 0.02 80;
+    --ring: 0.48 0.16 264;
 
     --radius: 0.5rem;
   }
 
   .dark,
   :root[class~="dark"] {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0.24 0.012 70;
+    --foreground: 0.95 0.014 85;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0.24 0.012 70;
+    --card-foreground: 0.95 0.014 85;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0.24 0.012 70;
+    --popover-foreground: 0.95 0.014 85;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0.67 0.13 264;
+    --primary-foreground: 0.212 0.01 67;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0.3 0.014 70;
+    --secondary-foreground: 0.95 0.014 85;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 16% 72%;
+    --muted: 0.3 0.014 70;
+    --muted-foreground: 0.74 0.02 80;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0.32 0.016 70;
+    --accent-foreground: 0.95 0.014 85;
 
-    --destructive: 0 72% 68%;
-    --destructive-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0.7 0.13 27;
+    --destructive-foreground: 0.212 0.01 67;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 0.38 0.018 70;
+    --input: 0.38 0.018 70;
+    --ring: 0.67 0.13 264;
   }
 }
 
@@ -79,14 +80,15 @@
     color-scheme: dark;
   }
   html {
-    accent-color: hsl(var(--foreground));
+    accent-color: oklch(var(--primary));
+    scrollbar-color: oklch(var(--border)) oklch(var(--background));
   }
   body {
     @apply bg-background text-foreground;
-    caret-color: hsl(var(--foreground));
+    caret-color: oklch(var(--primary));
   }
   ::selection {
-    background-color: hsl(var(--foreground) / 0.16);
-    color: hsl(var(--foreground));
+    background-color: oklch(var(--primary) / 0.22);
+    color: oklch(var(--foreground));
   }
 }
