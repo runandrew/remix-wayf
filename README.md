@@ -50,7 +50,14 @@ npx wrangler secret put DATABASE_URL
 npm run deploy
 ```
 
-`npm run deploy` runs `react-router build` then `wrangler deploy`. The Worker name in `wrangler.jsonc` is `wayf`, so the first deploy lands on `wayf.<account>.workers.dev` unless you attach a custom domain.
+`npm run deploy` runs `react-router build` then `wrangler deploy`. That overwrites the existing account Worker named `wayf` (id `e5e1317519674e49aaab82528e6ab10a`).
+
+Public hosts already attached to that Worker:
+
+- https://wayf.andrew-37e.workers.dev
+- https://wayf.grainlabs.co
+
+`wrangler.jsonc` keeps both (`workers_dev` + custom domain). Do not point `wayf.vercel.app` at these until you want the cutover.
 
 Optional later: Cloudflare Hyperdrive in front of Neon. Not required. Neon HTTP does not open a TCP `pg` connection per request, which is the thing the old Remix/Vercel setup was doing.
 

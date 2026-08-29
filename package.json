@@ -7,7 +7,7 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "preview": "npm run build && vite preview",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy --keep-vars",
     "cf-typegen": "wrangler types",
     "typecheck": "npm run cf-typegen && react-router typegen && tsc --noEmit",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
