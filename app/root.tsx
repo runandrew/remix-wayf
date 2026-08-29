@@ -1,7 +1,6 @@
 import { IconGithub } from "@/components/icons";
 import { ModeToggle } from "@/components/ModeToggle";
 import { Button } from "@/components/ui/button";
-import { THEME_COLOR_DARK, THEME_COLOR_LIGHT } from "@/lib/seo";
 import {
   isRouteErrorResponse,
   Link,
@@ -45,12 +44,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="theme-color"
-          content={THEME_COLOR_LIGHT}
+          content="#F3EEE4"
           media="(prefers-color-scheme: light)"
         />
         <meta
           name="theme-color"
-          content={THEME_COLOR_DARK}
+          content="#231E19"
           media="(prefers-color-scheme: dark)"
         />
         <Meta />

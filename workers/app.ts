@@ -39,6 +39,20 @@ function edgeCache(): Cache {
   return (caches as unknown as { default: Cache }).default;
 }
 
+function withMeetRobots(request: Request, response: Response): Response {
+  const path = new URL(request.url).pathname;
+  if (!path.startsWith("/m/")) {
+    return response;
+  }
+  const headers = new Headers(response.headers);
+  headers.set("X-Robots-Tag", "noindex, nofollow");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function rewriteLegacyCreatePost(request: Request): Request {
   if (request.method !== "POST") {
     return request;
@@ -60,7 +74,10 @@ export default {
     const loadContext = { cloudflare: { env, ctx } };
 
     if (!isHomepageGet(request)) {
-      return requestHandler(rewriteLegacyCreatePost(request), loadContext);
+      return withMeetRobots(
+        request,
+        await requestHandler(rewriteLegacyCreatePost(request), loadContext),
+      );
     }
 
     const cache = edgeCache();

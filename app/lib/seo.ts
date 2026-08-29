@@ -6,9 +6,6 @@ export const HOME_TITLE = "WAYF: When are you free?";
 export const HOME_DESCRIPTION =
   "Name a meetup, share a link, and pick the days you're free. WAYF shows the overlap. No accounts.";
 
-export const THEME_COLOR_LIGHT = "#F3EEE4";
-export const THEME_COLOR_DARK = "#231E19";
-
 const OG_IMAGE_PATH = "/og-wayf.png";
 const MARK_PATH = "/wayf-mark.png";
 const OG_IMAGE_ALT = "WAYF: When are you free?";
