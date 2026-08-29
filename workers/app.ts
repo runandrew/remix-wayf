@@ -4,6 +4,7 @@ import {
   markdownResponse,
   wantsMarkdown,
 } from "@/lib/markdown";
+import homepageStylesheet from "@/tailwind.css?url";
 import { createRequestHandler } from "react-router";
 
 declare module "react-router" {
@@ -21,8 +22,13 @@ const requestHandler = createRequestHandler(
   import.meta.env.MODE,
 );
 
-const HOMEPAGE_CACHE_CONTROL =
-  "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800";
+// Browsers must revalidate HTML after a deploy so they cannot keep a
+// document that points at deleted hashed /assets/* files.
+const HOMEPAGE_BROWSER_CACHE_CONTROL = "public, max-age=0, must-revalidate";
+// caches.default honors Cache-Control on put(). max-age=0 makes put() fail
+// (413) or match() miss, so the stored copy uses a long TTL. Invalidation is
+// the build-scoped cache key, not this header.
+const HOMEPAGE_EDGE_CACHE_CONTROL = "public, max-age=86400";
 
 function isHomepageGet(request: Request): boolean {
   if (request.method !== "GET") {
@@ -32,13 +38,23 @@ function isHomepageGet(request: Request): boolean {
   return url.pathname === "/" && url.search === "";
 }
 
-// Bump when homepage HTML, CSS tokens, or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "11";
-
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
-  url.searchParams.set("v", HOMEPAGE_CACHE_VERSION);
+  url.searchParams.set(
+    "v",
+    `${__WAYF_HOMEPAGE_CACHE_ID__}:${homepageStylesheet}`,
+  );
   return new Request(url.href, { method: "GET" });
+}
+
+function withCacheControl(response: Response, cacheControl: string): Response {
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", cacheControl);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 function edgeCache(): Cache {
@@ -107,7 +123,7 @@ export default {
     const cacheKey = homepageCacheKey(request);
     const cached = await cache.match(cacheKey);
     if (cached) {
-      return cached;
+      return withCacheControl(cached, HOMEPAGE_BROWSER_CACHE_CONTROL);
     }
 
     const response = await requestHandler(request, loadContext);
@@ -116,7 +132,7 @@ export default {
     }
 
     const headers = new Headers(response.headers);
-    headers.set("Cache-Control", HOMEPAGE_CACHE_CONTROL);
+    headers.set("Cache-Control", HOMEPAGE_EDGE_CACHE_CONTROL);
     headers.append("Vary", "Accept, Accept-Encoding");
     const cacheable = new Response(response.body, {
       status: response.status,
@@ -124,6 +140,6 @@ export default {
       headers,
     });
     ctx.waitUntil(cache.put(cacheKey, cacheable.clone()));
-    return cacheable;
+    return withCacheControl(cacheable, HOMEPAGE_BROWSER_CACHE_CONTROL);
   },
 } satisfies ExportedHandler<Env>;
