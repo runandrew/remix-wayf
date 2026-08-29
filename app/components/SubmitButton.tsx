@@ -13,11 +13,14 @@ export function SubmitButton({
   return (
     <Button
       type="submit"
-      aria-disabled={submitting}
+      aria-busy={submitting || undefined}
       disabled={submitting || disabled}
+      className="relative"
     >
-      {submitting && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
-      {text}
+      <span className={submitting ? "invisible" : undefined}>{text}</span>
+      {submitting ? (
+        <IconSpinner className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+      ) : null}
     </Button>
   );
 }
