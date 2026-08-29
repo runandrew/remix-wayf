@@ -49,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <meta
           name="theme-color"
-          content="#231E19"
+          content="#0D1218"
           media="(prefers-color-scheme: dark)"
         />
         <Meta />
