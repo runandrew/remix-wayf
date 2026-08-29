@@ -4,7 +4,6 @@ import {
   markdownResponse,
   wantsMarkdown,
 } from "@/lib/markdown";
-import homepageStylesheet from "@/tailwind.css?url";
 import { createRequestHandler } from "react-router";
 
 declare module "react-router" {
@@ -21,45 +20,6 @@ const requestHandler = createRequestHandler(
   () => import("virtual:react-router/server-build"),
   import.meta.env.MODE,
 );
-
-// Browsers must revalidate HTML after a deploy so they cannot keep a
-// document that points at deleted hashed /assets/* files.
-const HOMEPAGE_BROWSER_CACHE_CONTROL = "public, max-age=0, must-revalidate";
-// caches.default honors Cache-Control on put(). max-age=0 makes put() fail
-// (413) or match() miss, so the stored copy uses a long TTL. Invalidation is
-// the build-scoped cache key, not this header.
-const HOMEPAGE_EDGE_CACHE_CONTROL = "public, max-age=86400";
-
-function isHomepageGet(request: Request): boolean {
-  if (request.method !== "GET") {
-    return false;
-  }
-  const url = new URL(request.url);
-  return url.pathname === "/" && url.search === "";
-}
-
-function homepageCacheKey(request: Request): Request {
-  const url = new URL("/", request.url);
-  url.searchParams.set(
-    "v",
-    `${__WAYF_HOMEPAGE_CACHE_ID__}:${homepageStylesheet}`,
-  );
-  return new Request(url.href, { method: "GET" });
-}
-
-function withCacheControl(response: Response, cacheControl: string): Response {
-  const headers = new Headers(response.headers);
-  headers.set("Cache-Control", cacheControl);
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-}
-
-function edgeCache(): Cache {
-  return (caches as unknown as { default: Cache }).default;
-}
 
 function withMeetRobots(request: Request, response: Response): Response {
   const path = new URL(request.url).pathname;
@@ -112,34 +72,9 @@ export default {
       return withMeetRobots(request, markdown);
     }
 
-    if (!isHomepageGet(request)) {
-      return withMeetRobots(
-        request,
-        await requestHandler(rewriteLegacyCreatePost(request), loadContext),
-      );
-    }
-
-    const cache = edgeCache();
-    const cacheKey = homepageCacheKey(request);
-    const cached = await cache.match(cacheKey);
-    if (cached) {
-      return withCacheControl(cached, HOMEPAGE_BROWSER_CACHE_CONTROL);
-    }
-
-    const response = await requestHandler(request, loadContext);
-    if (response.status !== 200) {
-      return response;
-    }
-
-    const headers = new Headers(response.headers);
-    headers.set("Cache-Control", HOMEPAGE_EDGE_CACHE_CONTROL);
-    headers.append("Vary", "Accept, Accept-Encoding");
-    const cacheable = new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers,
-    });
-    ctx.waitUntil(cache.put(cacheKey, cacheable.clone()));
-    return withCacheControl(cacheable, HOMEPAGE_BROWSER_CACHE_CONTROL);
+    return withMeetRobots(
+      request,
+      await requestHandler(rewriteLegacyCreatePost(request), loadContext),
+    );
   },
 } satisfies ExportedHandler<Env>;

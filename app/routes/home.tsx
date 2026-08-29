@@ -5,7 +5,11 @@ import { Input } from "@/components/ui/input";
 import { createMeetupAction } from "@/lib/create-meetup.server";
 import { formErrorMessage } from "@/lib/form-errors";
 import { homeMeta } from "@/lib/seo";
-import type { ActionFunctionArgs, MetaFunction } from "react-router";
+import type {
+  ActionFunctionArgs,
+  HeadersFunction,
+  MetaFunction,
+} from "react-router";
 import {
   Form,
   useActionData,
@@ -14,6 +18,10 @@ import {
 } from "react-router";
 
 export const meta: MetaFunction = () => homeMeta();
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": "public, max-age=0, must-revalidate",
+});
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   return createMeetupAction(request, context);

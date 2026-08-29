@@ -3,8 +3,6 @@
 export {};
 
 declare global {
-  const __WAYF_HOMEPAGE_CACHE_ID__: string;
-
   interface Env {
     DATABASE_URL?: string;
     // Legacy Hono Worker used this name in .env.example.
