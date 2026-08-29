@@ -50,6 +50,8 @@ npx wrangler secret put DATABASE_URL
 npm run deploy
 ```
 
+Merges to `main` deploy the Worker via `.github/workflows/deploy-worker.yml` (repo secret `CLOUDFLARE_API_TOKEN`).
+
 `npm run deploy` runs `react-router build` then `wrangler deploy`. That overwrites the existing account Worker named `wayf` (id `e5e1317519674e49aaab82528e6ab10a`).
 
 Public hosts already attached to that Worker:
