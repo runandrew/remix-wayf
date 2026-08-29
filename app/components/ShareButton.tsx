@@ -36,7 +36,7 @@ const ShareButton = ({ params: { meet } }: { params: { meet: Meet } }) => {
 
   return (
     <>
-      <Button onClick={share} variant={"outline"}>
+      <Button onClick={share} type="button" variant="outline">
         <span className="pr-1">Share</span>
         <IconShare />
       </Button>

@@ -6,12 +6,7 @@ import { getDatabaseUrl } from "@/env";
 import { formatDayHeading } from "@/lib/dates";
 import { Availabilities } from "@/types";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import {
-  useLoaderData,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from "react-router";
+import { Link, useLoaderData, useNavigation } from "react-router";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -23,7 +18,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 function requireId(uuid: string | undefined): string {
   const id = uuid?.trim();
   if (!id) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Meetup not found", { status: 404 });
   }
   return id;
 }
@@ -31,7 +26,7 @@ function requireId(uuid: string | undefined): string {
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
   if (!meet) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Meetup not found", { status: 404 });
   }
   return { meet };
 };
@@ -58,59 +53,52 @@ const availsByDate = (avails: Availabilities) => {
 export default function MeetupDetails() {
   const { meet } = useLoaderData<typeof loader>();
   const dates = availsByDate(meet.availabilities);
-  const params = useParams();
   const navigation = useNavigation();
-  const navigate = useNavigate();
   const respondentCount = Object.keys(meet.availabilities).length;
+  const busy = navigation.state !== "idle";
 
   return (
-    <div className="flex w-full flex-col items-center gap-4 pt-20">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
+    <div className="flex w-full min-w-0 flex-col items-center gap-6 pt-16">
+      <h1 className="w-full break-words text-center text-4xl font-extrabold tracking-tight">
         {meet.name}
       </h1>
-      <div className="flex flex-row pb-4">
-        <div className="pr-4">
-          <Button
-            disabled={navigation.state === "loading"}
-            onClick={() => navigate(`/m/${params.uuid}/avails`)}
+      <div className="flex flex-row flex-wrap items-center justify-center gap-3">
+        <Button asChild>
+          <Link
+            to={`/m/${meet.uuid}/avails`}
+            className={busy ? "pointer-events-none opacity-50" : undefined}
           >
             Add Availability
-          </Button>
-        </div>
+          </Link>
+        </Button>
         <ShareButton params={{ meet }} />
       </div>
       {dates.length === 0 && (
-        <div className="w-full px-4">
-          <h5 className="pb-2">
-            <span className="font-semibold text-lg">
-              🎉 You&apos;re ready to schedule!
-            </span>
-          </h5>
-          <ul className="list-disc list-inside">
+        <div className="w-full">
+          <p className="pb-2 text-lg font-semibold">
+            🎉 You&apos;re ready to schedule!
+          </p>
+          <ul className="list-inside list-disc">
             <li>Click &apos;Add Availability&apos; to set days you are free</li>
             <li>Share this link with your friends so they can schedule</li>
           </ul>
         </div>
       )}
-      <div className="w-full pb-4">
+      <div className="w-full min-w-0">
         {dates.map((date) => (
           <div key={date.day} className="py-2">
-            <div className="flex flex-row items-center">
-              <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <h2 className="text-xl font-semibold tracking-tight">
                 {formatDayHeading(date.day)}
-              </h4>
-              <div className="pl-2">
-                <span className="text-xs">
-                  {`${date.groups.length} / ${respondentCount}`}
-                </span>
-              </div>
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                {`${date.groups.length} / ${respondentCount}`}
+              </span>
               {date.groups.length === respondentCount && (
-                <div className="pl-2">
-                  <IconCheck />
-                </div>
+                <IconCheck className="text-green-600 dark:text-green-500" />
               )}
             </div>
-            <span>{date.groups.join(", ")}</span>
+            <p className="break-words">{date.groups.join(", ")}</p>
           </div>
         ))}
       </div>

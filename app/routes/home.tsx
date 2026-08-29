@@ -1,9 +1,16 @@
-import { create } from "@/api/services/meet";
+import { AboutPopover } from "@/components/AboutPopover";
+import { FormError } from "@/components/FormError";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Input } from "@/components/ui/input";
-import { getDatabaseUrl } from "@/env";
+import { createMeetupAction } from "@/lib/create-meetup.server";
+import { formErrorMessage } from "@/lib/form-errors";
 import type { ActionFunctionArgs, MetaFunction } from "react-router";
-import { Form, redirect, useNavigation } from "react-router";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,66 +19,53 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export function headers() {
-  return {
-    "Cache-Control":
-      "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
-  };
-}
-
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const name = String(formData.get("name") ?? "").trim();
-  if (!name) {
-    throw new Response("Name is required", { status: 400 });
-  }
-  const id = await create(getDatabaseUrl(context), name);
-  return redirect(`/m/${id}`);
+  return createMeetupAction(request, context);
 };
 
 export default function Index() {
   const navigation = useNavigation();
+  const [searchParams] = useSearchParams();
+  const actionData = useActionData<typeof action>();
+  const error = formErrorMessage(
+    (actionData && "error" in actionData ? actionData.error : null) ??
+      searchParams.get("error"),
+  );
+  const submitting = navigation.state === "submitting";
 
   return (
-    <div className="flex w-full flex-col items-center gap-4 pt-20">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-3xl">
-        WAYF
-      </h1>
-      <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
-        Scheduling meetups <i>simplified</i>
-      </h4>
-      <Form method="post">
-        <div className="flex flex-row gap-4">
+    <div className="flex w-full flex-col items-center gap-6 pt-16">
+      <div className="flex w-full flex-col items-center gap-2">
+        <h1 className="text-4xl font-extrabold tracking-tight">WAYF</h1>
+        <p className="text-xl font-semibold tracking-tight">
+          Scheduling meetups <i>simplified</i>
+        </p>
+      </div>
+      <Form method="post" action="/?index" className="flex w-full flex-col gap-2">
+        <div className="flex flex-row items-center gap-3">
+          <label htmlFor="meetup-name" className="sr-only">
+            Meetup name
+          </label>
           <Input
+            id="meetup-name"
             name="name"
-            type="name"
+            type="text"
             placeholder="Name, e.g. Book Club 📚"
             autoComplete="off"
             autoCapitalize="words"
             required
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? "create-error" : undefined}
           />
           <SubmitButton
-            submitting={navigation.state === "submitting"}
+            submitting={submitting}
             text="Create"
             disabled={navigation.state === "loading"}
           />
         </div>
+        <FormError id="create-error" message={error} />
       </Form>
-      <details className="w-full max-w-sm text-center">
-        <summary className="cursor-pointer text-sm font-medium underline-offset-4 hover:underline">
-          About
-        </summary>
-        <div className="pt-2 text-left text-sm">
-          <h5 className="font-semibold pb-1">WAYF: When are you free?</h5>
-          <p>
-            Scheduling applications have become increasingly complicated. They
-            are littered with unnecessary features and demand user accounts.
-            WAYF focuses on a user-friendly experience to find the perfect
-            meeting times for everyone involved. Say goodbye to unnecessary
-            complexities and hello to efficient, stress-free scheduling.
-          </p>
-        </div>
-      </details>
+      <AboutPopover />
     </div>
   );
 }
