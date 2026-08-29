@@ -5,6 +5,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { screenshotFixtureMeetFor } from "@/dev/screenshot-fixture";
 import { getDatabaseUrl } from "@/env";
 import { formatDay, parseDay, startOfToday } from "@/lib/dates";
 import { formErrorMessage } from "@/lib/form-errors";
@@ -38,7 +39,10 @@ function requireId(uuid: string | undefined): string {
 }
 
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
-  const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
+  const id = requireId(params.uuid);
+  const fixtureMeet = screenshotFixtureMeetFor(id);
+  const meet =
+    fixtureMeet ?? (await find(getDatabaseUrl(context), id));
   if (!meet) {
     throw new Response("Meetup not found", { status: 404 });
   }

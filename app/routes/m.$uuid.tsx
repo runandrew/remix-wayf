@@ -2,6 +2,7 @@ import { find } from "@/api/services/meet";
 import ShareButton from "@/components/ShareButton";
 import { IconCheck } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { screenshotFixtureMeetFor } from "@/dev/screenshot-fixture";
 import { getDatabaseUrl } from "@/env";
 import { formatDayHeading } from "@/lib/dates";
 import { Availabilities } from "@/types";
@@ -24,7 +25,10 @@ function requireId(uuid: string | undefined): string {
 }
 
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
-  const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
+  const id = requireId(params.uuid);
+  const fixtureMeet = screenshotFixtureMeetFor(id);
+  const meet =
+    fixtureMeet ?? (await find(getDatabaseUrl(context), id));
   if (!meet) {
     throw new Response("Meetup not found", { status: 404 });
   }
