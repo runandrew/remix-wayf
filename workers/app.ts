@@ -33,7 +33,7 @@ function isHomepageGet(request: Request): boolean {
 }
 
 // Bump when homepage HTML, CSS tokens, or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "10";
+const HOMEPAGE_CACHE_VERSION = "11";
 
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
