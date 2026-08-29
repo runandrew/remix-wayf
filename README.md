@@ -71,5 +71,6 @@ This rewrite:
 
 - SSR on Cloudflare Workers (official Vite plugin path, not Pages)
 - Neon via HTTP (`drizzle-orm/neon-http`), same schema
-- Homepage GET cached at the edge (`caches.default`, 1 hour)
+- Homepage GET is static: no Neon, no session. Cached at the edge (`caches.default`, 1 day, stale-while-revalidate 1 week)
+- Neon HTTP client is reused per Worker isolate. Create and save availability are one query each, then redirect
 - Dead Supabase, Remix Node server, Sentry upload, and Vercel analytics removed

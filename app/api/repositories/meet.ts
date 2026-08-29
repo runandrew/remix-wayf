@@ -1,4 +1,4 @@
-import { createDb } from "@/db/client";
+import { getDb, getNeon } from "@/db/client";
 import { meetTable } from "@/db/schema";
 import { Availabilities, Meet } from "@/types";
 import { eq } from "drizzle-orm";
@@ -23,25 +23,25 @@ export async function create(
   databaseUrl: string,
   name: string,
   externalId: string,
-): Promise<Meet> {
-  const db = createDb(databaseUrl);
+): Promise<string> {
+  const db = getDb(databaseUrl);
   const [meet] = await db
     .insert(meetTable)
     .values({ name, externalId })
-    .returning();
+    .returning({ externalId: meetTable.externalId });
 
   if (!meet) {
     throw new Error("Failed to create meet");
   }
 
-  return drizzleMeetToMeet(meet);
+  return meet.externalId;
 }
 
 export async function find(
   databaseUrl: string,
   externalId: string,
 ): Promise<Meet | null> {
-  const db = createDb(databaseUrl);
+  const db = getDb(databaseUrl);
   const [meet] = await db
     .select()
     .from(meetTable)
@@ -54,21 +54,21 @@ export async function find(
   return drizzleMeetToMeet(meet);
 }
 
-export async function updateAvailabilities(
+export async function mergeAvailabilities(
   databaseUrl: string,
   externalId: string,
-  availabilities: Availabilities,
-): Promise<Meet | null> {
-  const db = createDb(databaseUrl);
-  const [meet] = await db
-    .update(meetTable)
-    .set({ availabilities, updatedAt: new Date() })
-    .where(eq(meetTable.externalId, externalId))
-    .returning();
-
-  if (!meet) {
-    return null;
-  }
-
-  return drizzleMeetToMeet(meet);
+  group: string,
+  days: { day: string }[],
+): Promise<boolean> {
+  const sql = getNeon(databaseUrl);
+  const patch: Availabilities = { [group]: days };
+  const rows = await sql`
+    UPDATE meet
+    SET
+      availabilities = coalesce(availabilities, '{}'::jsonb) || ${JSON.stringify(patch)}::jsonb,
+      updated_at = now()
+    WHERE external_id = ${externalId}
+    RETURNING external_id
+  `;
+  return Array.isArray(rows) && rows.length > 0;
 }

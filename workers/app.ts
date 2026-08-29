@@ -16,18 +16,21 @@ const requestHandler = createRequestHandler(
 );
 
 const HOMEPAGE_CACHE_CONTROL =
-  "public, s-maxage=3600, stale-while-revalidate=86400";
+  "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800";
 
 function isHomepageGet(request: Request): boolean {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return false;
   }
-  const url = new URL(request.url);
-  return url.pathname === "/";
+  return new URL(request.url).pathname === "/";
 }
 
 function homepageCacheKey(request: Request): Request {
   return new Request(new URL("/", request.url).href, { method: "GET" });
+}
+
+function edgeCache(): Cache {
+  return (caches as unknown as { default: Cache }).default;
 }
 
 export default {
@@ -38,7 +41,7 @@ export default {
       return requestHandler(request, loadContext);
     }
 
-    const cache = await caches.open("wayf-homepage");
+    const cache = edgeCache();
     const cacheKey = homepageCacheKey(request);
     const cached = await cache.match(cacheKey);
     if (cached) {

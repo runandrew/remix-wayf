@@ -1,40 +1,24 @@
 import {
-  create as drizzleCreate,
-  find as drizzleFind,
-  updateAvailabilities as drizzleUpdateAvailabilities,
+  create as insertMeet,
+  find as findMeet,
+  mergeAvailabilities,
 } from "@/api/repositories/meet";
-import { Availabilities, Meet } from "@/types";
-import { format, isValid, parseISO } from "date-fns";
-import ShortUniqueId from "short-unique-id";
+import { isValidDay } from "@/lib/dates";
+import { newExternalId } from "@/lib/id";
+import { Meet } from "@/types";
 
-export async function create(databaseUrl: string, name: string): Promise<Meet> {
-  const uid = new ShortUniqueId({ length: 10 });
-  return drizzleCreate(databaseUrl, name, uid.rnd());
+export async function create(
+  databaseUrl: string,
+  name: string,
+): Promise<string> {
+  return insertMeet(databaseUrl, name, newExternalId());
 }
 
 export async function find(
   databaseUrl: string,
   externalId: string,
 ): Promise<Meet | null> {
-  return drizzleFind(databaseUrl, externalId);
-}
-
-function normalizeAvailDay(day: string): string | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
-    return null;
-  }
-
-  const parsed = parseISO(day);
-  if (!isValid(parsed)) {
-    return null;
-  }
-
-  // Reject rollover cases like 2024-02-30 -> 2024-03-01
-  if (format(parsed, "yyyy-MM-dd") !== day) {
-    return null;
-  }
-
-  return day;
+  return findMeet(databaseUrl, externalId);
 }
 
 export async function updateMeetAvails(
@@ -42,29 +26,20 @@ export async function updateMeetAvails(
   externalId: string,
   group: string,
   dates: string[],
-): Promise<Meet> {
-  const meet = await find(databaseUrl, externalId);
-  if (!meet) {
-    throw new Response("Not Found", { status: 404 });
-  }
+): Promise<void> {
+  const days = dates
+    .map((d) => d.trim())
+    .filter(isValidDay)
+    .map((day) => ({ day }));
 
-  const updatedAvails: Availabilities = {
-    ...meet.availabilities,
-    [group]: dates
-      .map((d) => normalizeAvailDay(d.trim()))
-      .filter((d): d is string => d !== null)
-      .map((day) => ({ day })),
-  };
-
-  const updated = await drizzleUpdateAvailabilities(
+  const updated = await mergeAvailabilities(
     databaseUrl,
     externalId,
-    updatedAvails,
+    group,
+    days,
   );
 
   if (!updated) {
-    throw new Error("Failed to update availabilities");
+    throw new Response("Not Found", { status: 404 });
   }
-
-  return updated;
 }

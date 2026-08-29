@@ -1,9 +1,11 @@
 import { find, updateMeetAvails } from "@/api/services/meet";
+import { IconPencil } from "@/components/icons";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { getDatabaseUrl } from "@/env";
+import { formatDay, parseDay } from "@/lib/dates";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -16,11 +18,7 @@ import {
   useNavigation,
   useSearchParams,
 } from "react-router";
-import { format } from "date-fns/format";
-import { parseISO } from "date-fns/parseISO";
-import { Pencil } from "lucide-react";
 import React from "react";
-import { z } from "zod";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -29,13 +27,16 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-const paramSchema = z.object({
-  uuid: z.string(),
-});
+function requireId(uuid: string | undefined): string {
+  const id = uuid?.trim();
+  if (!id) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return id;
+}
 
-export const loader = async ({ params: raw, context }: LoaderFunctionArgs) => {
-  const params = paramSchema.parse(raw);
-  const meet = await find(getDatabaseUrl(context), params.uuid);
+export const loader = async ({ params, context }: LoaderFunctionArgs) => {
+  const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -89,7 +90,7 @@ const Avails = () => {
                         )
                       }
                     >
-                      <Pencil className="h-4 w-4" />
+                      <IconPencil className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -104,10 +105,10 @@ const Avails = () => {
 
 export const action = async ({
   request,
-  params: raw,
+  params,
   context,
 }: ActionFunctionArgs) => {
-  const params = paramSchema.parse(raw);
+  const id = requireId(params.uuid);
   const formData = await request.formData();
   const url = new URL(request.url);
   const group = url.searchParams.get("group") ?? "";
@@ -115,12 +116,12 @@ export const action = async ({
 
   await updateMeetAvails(
     getDatabaseUrl(context),
-    params.uuid,
+    id,
     decodeURIComponent(group),
     dates.split(",").filter(Boolean),
   );
 
-  return redirect(`/m/${params.uuid}`);
+  return redirect(`/m/${id}`);
 };
 
 function AddAvails() {
@@ -129,7 +130,7 @@ function AddAvails() {
   const decodedGroup = decodeURIComponent(searchParams.get("group") ?? "");
   const dates = meet.availabilities[decodedGroup] ?? [];
   const [multiDates, setMultiDates] = React.useState<Date[] | undefined>(
-    dates.map((date: { day: string }) => parseISO(date.day)),
+    dates.map((date: { day: string }) => parseDay(date.day)),
   );
   const navigation = useNavigation();
 
@@ -146,8 +147,7 @@ function AddAvails() {
           name="dates"
           className="hidden"
           readOnly={true}
-          // Avoid toISOString: it converts to UTC and can shift the calendar day.
-          value={multiDates?.map((d) => format(d, "yyyy-MM-dd"))}
+          value={multiDates?.map((d) => formatDay(d))}
         />
         <div className="flex flex-col items-center gap-4">
           <Calendar

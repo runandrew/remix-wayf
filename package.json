@@ -15,26 +15,18 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@radix-ui/react-popover": "^1.0.7",
-    "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "date-fns": "^3.3.1",
     "drizzle-orm": "^0.44.7",
     "isbot": "^5.1.31",
-    "lucide-react": "^0.316.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.3.1",
     "react-router": "7.18.3",
-    "remix-themes": "^2.0.4",
-    "short-unique-id": "^5.2.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.19",

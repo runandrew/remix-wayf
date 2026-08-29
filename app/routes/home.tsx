@@ -1,16 +1,9 @@
 import { create } from "@/api/services/meet";
 import { SubmitButton } from "@/components/SubmitButton";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { getDatabaseUrl } from "@/env";
 import type { ActionFunctionArgs, MetaFunction } from "react-router";
 import { Form, redirect, useNavigation } from "react-router";
-import { z } from "zod";
 
 export const meta: MetaFunction = () => {
   return [
@@ -21,17 +14,19 @@ export const meta: MetaFunction = () => {
 
 export function headers() {
   return {
-    "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+    "Cache-Control":
+      "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
   };
 }
 
-const nameSchema = z.string().trim().min(1);
-
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const name = nameSchema.parse(formData.get("name"));
-  const meet = await create(getDatabaseUrl(context), name);
-  return redirect(`/m/${meet.uuid}`);
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) {
+    throw new Response("Name is required", { status: 400 });
+  }
+  const id = await create(getDatabaseUrl(context), name);
+  return redirect(`/m/${id}`);
 };
 
 export default function Index() {
@@ -62,11 +57,11 @@ export default function Index() {
           />
         </div>
       </Form>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="link">About</Button>
-        </PopoverTrigger>
-        <PopoverContent>
+      <details className="w-full max-w-sm text-center">
+        <summary className="cursor-pointer text-sm font-medium underline-offset-4 hover:underline">
+          About
+        </summary>
+        <div className="pt-2 text-left text-sm">
           <h5 className="font-semibold pb-1">WAYF: When are you free?</h5>
           <p>
             Scheduling applications have become increasingly complicated. They
@@ -75,8 +70,8 @@ export default function Index() {
             meeting times for everyone involved. Say goodbye to unnecessary
             complexities and hello to efficient, stress-free scheduling.
           </p>
-        </PopoverContent>
-      </Popover>
+        </div>
+      </details>
     </div>
   );
 }

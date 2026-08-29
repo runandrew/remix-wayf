@@ -1,7 +1,9 @@
 import { find } from "@/api/services/meet";
 import ShareButton from "@/components/ShareButton";
+import { IconCheck } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getDatabaseUrl } from "@/env";
+import { formatDayHeading } from "@/lib/dates";
 import { Availabilities } from "@/types";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import {
@@ -10,10 +12,6 @@ import {
   useNavigation,
   useParams,
 } from "react-router";
-import { formatDate } from "date-fns/format";
-import { parseISO } from "date-fns/parseISO";
-import { CheckCircle2 } from "lucide-react";
-import { z } from "zod";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -22,11 +20,16 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
+function requireId(uuid: string | undefined): string {
+  const id = uuid?.trim();
+  if (!id) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return id;
+}
+
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
-  const meet = await find(
-    getDatabaseUrl(context),
-    z.string().parse(params.uuid),
-  );
+  const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -49,7 +52,7 @@ const availsByDate = (avails: Availabilities) => {
       day,
       groups: dates[day],
     }))
-    .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
+    .sort((a, b) => (a.day < b.day ? -1 : a.day > b.day ? 1 : 0));
 };
 
 export default function MeetupDetails() {
@@ -58,6 +61,7 @@ export default function MeetupDetails() {
   const params = useParams();
   const navigation = useNavigation();
   const navigate = useNavigate();
+  const respondentCount = Object.keys(meet.availabilities).length;
 
   return (
     <div className="flex w-full flex-col items-center gap-4 pt-20">
@@ -93,19 +97,16 @@ export default function MeetupDetails() {
           <div key={date.day} className="py-2">
             <div className="flex flex-row items-center">
               <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                {formatDate(parseISO(date.day), "EEEE, MMM d")}
+                {formatDayHeading(date.day)}
               </h4>
               <div className="pl-2">
                 <span className="text-xs">
-                  {`${date.groups.length} / ${
-                    Object.keys(meet.availabilities).length
-                  }`}
+                  {`${date.groups.length} / ${respondentCount}`}
                 </span>
               </div>
-              {date.groups.length ===
-                Object.keys(meet.availabilities).length && (
+              {date.groups.length === respondentCount && (
                 <div className="pl-2">
-                  <CheckCircle2 size={20} color="#16a34a" />
+                  <IconCheck />
                 </div>
               )}
             </div>
