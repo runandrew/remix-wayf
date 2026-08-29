@@ -1,24 +1,24 @@
-import { Availabilities, Meet } from "@/types";
-import { parseISO, isValid, format } from "date-fns";
 import {
   create as drizzleCreate,
   find as drizzleFind,
   updateAvailabilities as drizzleUpdateAvailabilities,
-} from "@/api/repositories/meetDrizzle";
+} from "@/api/repositories/meet";
+import { Availabilities, Meet } from "@/types";
+import { format, isValid, parseISO } from "date-fns";
 import ShortUniqueId from "short-unique-id";
 
-export async function create(name: string): Promise<Meet> {
+export async function create(databaseUrl: string, name: string): Promise<Meet> {
   const uid = new ShortUniqueId({ length: 10 });
-  const externalId = uid.rnd();
-
-  return drizzleCreate(name, externalId);
+  return drizzleCreate(databaseUrl, name, uid.rnd());
 }
 
-export async function find(externalId: string): Promise<Meet> {
-  return drizzleFind(externalId);
+export async function find(
+  databaseUrl: string,
+  externalId: string,
+): Promise<Meet | null> {
+  return drizzleFind(databaseUrl, externalId);
 }
 
-// Validate date strings in the format "yyyy-MM-dd" and that it's a valid date. Returns null if these checks fail.
 function normalizeAvailDay(day: string): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
     return null;
@@ -38,23 +38,29 @@ function normalizeAvailDay(day: string): string | null {
 }
 
 export async function updateMeetAvails(
+  databaseUrl: string,
   externalId: string,
   group: string,
   dates: string[],
 ): Promise<Meet> {
-  const meet = await find(externalId);
-  const avails = meet.availabilities;
+  const meet = await find(databaseUrl, externalId);
+  if (!meet) {
+    throw new Response("Not Found", { status: 404 });
+  }
 
-  // Update availabilities
   const updatedAvails: Availabilities = {
-    ...avails,
+    ...meet.availabilities,
     [group]: dates
       .map((d) => normalizeAvailDay(d.trim()))
       .filter((d): d is string => d !== null)
       .map((day) => ({ day })),
   };
 
-  const updated = await drizzleUpdateAvailabilities(externalId, updatedAvails);
+  const updated = await drizzleUpdateAvailabilities(
+    databaseUrl,
+    externalId,
+    updatedAvails,
+  );
 
   if (!updated) {
     throw new Error("Failed to update availabilities");

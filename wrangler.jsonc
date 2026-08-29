@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wayf",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-08-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+  // DATABASE_URL is a Worker secret. Do not put it in `vars`.
+  //   npx wrangler secret put DATABASE_URL
+  // Locally, copy .dev.vars.example to .dev.vars.
+}

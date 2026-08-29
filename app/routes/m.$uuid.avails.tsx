@@ -1,25 +1,26 @@
-import { updateMeetAvails, find } from "@/api/services/meet";
+import { find, updateMeetAvails } from "@/api/services/meet";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { getDatabaseUrl } from "@/env";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+} from "react-router";
 import {
   Form,
+  redirect,
   useLoaderData,
   useNavigation,
   useSearchParams,
-} from "@remix-run/react";
+} from "react-router";
 import { format } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
 import { Pencil } from "lucide-react";
 import React from "react";
-import z from "zod";
+import { z } from "zod";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -32,20 +33,19 @@ const paramSchema = z.object({
   uuid: z.string(),
 });
 
-export const loader = async ({ params: raw }: LoaderFunctionArgs) => {
+export const loader = async ({ params: raw, context }: LoaderFunctionArgs) => {
   const params = paramSchema.parse(raw);
-  const meet = await find(params.uuid);
+  const meet = await find(getDatabaseUrl(context), params.uuid);
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ meet });
+  return { meet };
 };
 
 const Avails = () => {
   const { meet } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   return (
     <div className="flex w-full flex-col items-center gap-4 pt-20">
@@ -102,7 +102,11 @@ const Avails = () => {
   );
 };
 
-export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
+export const action = async ({
+  request,
+  params: raw,
+  context,
+}: ActionFunctionArgs) => {
   const params = paramSchema.parse(raw);
   const formData = await request.formData();
   const url = new URL(request.url);
@@ -110,6 +114,7 @@ export const action = async ({ request, params: raw }: ActionFunctionArgs) => {
   const dates = formData.get("dates")?.toString() ?? "";
 
   await updateMeetAvails(
+    getDatabaseUrl(context),
     params.uuid,
     decodeURIComponent(group),
     dates.split(",").filter(Boolean),
@@ -141,8 +146,7 @@ function AddAvails() {
           name="dates"
           className="hidden"
           readOnly={true}
-          // Note, avoid toISOString as that can cause timezone issue due to it always converting to UTC. 
-          // Instead, format the users local date directly without timezone conversion.
+          // Avoid toISOString: it converts to UTC and can shift the calendar day.
           value={multiDates?.map((d) => format(d, "yyyy-MM-dd"))}
         />
         <div className="flex flex-col items-center gap-4">
@@ -169,7 +173,6 @@ export default function Wrapper() {
   const [searchParams] = useSearchParams();
   if (searchParams.has("group")) {
     return <AddAvails />;
-  } else {
-    return <Avails />;
   }
+  return <Avails />;
 }

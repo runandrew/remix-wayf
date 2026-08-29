@@ -1,0 +1,4 @@
+# Copy to .dev.vars (gitignored) for local `npm run dev`.
+# Use a Neon connection string. The Worker talks to Neon over HTTP,
+# so a local docker Postgres URL will not work.
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require

@@ -1,0 +1,17 @@
+{
+  "framework": null,
+  "buildCommand": "mkdir -p public && printf 'Redirect-only. WAYF runs on Cloudflare Workers.\\n' > public/index.html",
+  "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://YOUR-WORKERS-HOST.example.workers.dev/",
+      "statusCode": 308
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://YOUR-WORKERS-HOST.example.workers.dev/:path*",
+      "statusCode": 308
+    }
+  ]
+}

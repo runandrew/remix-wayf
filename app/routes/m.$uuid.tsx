@@ -1,19 +1,19 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { find } from "@/api/services/meet";
+import ShareButton from "@/components/ShareButton";
+import { Button } from "@/components/ui/button";
+import { getDatabaseUrl } from "@/env";
+import { Availabilities } from "@/types";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import {
   useLoaderData,
   useNavigate,
   useNavigation,
   useParams,
-} from "@remix-run/react";
-import { json } from "@remix-run/node";
-import { find } from "@/api/services/meet";
-import { Button } from "@/components/ui/button";
-import { Availabilities } from "@/types";
+} from "react-router";
 import { formatDate } from "date-fns/format";
 import { parseISO } from "date-fns/parseISO";
 import { CheckCircle2 } from "lucide-react";
-import ShareButton from "@/components/ShareButton";
-import z from "zod";
+import { z } from "zod";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -22,12 +22,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const meet = await find(z.string().parse(params.uuid));
+export const loader = async ({ params, context }: LoaderFunctionArgs) => {
+  const meet = await find(
+    getDatabaseUrl(context),
+    z.string().parse(params.uuid),
+  );
   if (!meet) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ meet });
+  return { meet };
 };
 
 const availsByDate = (avails: Availabilities) => {
@@ -41,18 +44,12 @@ const availsByDate = (avails: Availabilities) => {
     }
   }
 
-  const datesArray = Object.keys(dates)
-    .map((day) => {
-      return {
-        day,
-        groups: dates[day],
-      };
-    })
-    .sort((a, b) => {
-      return new Date(a.day).getTime() - new Date(b.day).getTime();
-    });
-
-  return datesArray;
+  return Object.keys(dates)
+    .map((day) => ({
+      day,
+      groups: dates[day],
+    }))
+    .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
 };
 
 export default function MeetupDetails() {

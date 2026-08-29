@@ -1,17 +1,16 @@
-import { useState } from "react";
 import { create } from "@/api/services/meet";
-import { Input } from "@/components/ui/input";
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, redirect, useNavigation } from "@remix-run/react";
 import { SubmitButton } from "@/components/SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { getDatabaseUrl } from "@/env";
+import type { ActionFunctionArgs, MetaFunction } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
+import { z } from "zod";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,46 +19,20 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const m = await create((formData.get("name") as string).trim()); // use zod
-  return redirect(`/m/${m.uuid}`);
-};
-
-function WeHaveMovedBanner() {
-  const [visible, setVisible] = useState(true);
-
-  if (!visible) return null;
-
-  return (
-    <Alert className="bg-blue-100 dark:bg-blue-950 border-blue-500 text-blue-800 dark:text-blue-100 relative">
-      <div className="flex items-center justify-between w-full">
-        <div>
-          <AlertTitle>We&apos;ve Moved!</AlertTitle>
-          <AlertDescription>
-            Our website is now at{" "}
-            <a
-              href="https://wayf.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline font-semibold hover:text-blue-600 dark:hover:text-blue-300"
-            >
-              wayf.vercel.app
-            </a>
-            . Please update your bookmarks.
-          </AlertDescription>
-        </div>
-        <button
-          onClick={() => setVisible(false)}
-          className="absolute top-2 right-2 p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full"
-          aria-label="Close banner"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    </Alert>
-  );
+export function headers() {
+  return {
+    "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+  };
 }
+
+const nameSchema = z.string().trim().min(1);
+
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const name = nameSchema.parse(formData.get("name"));
+  const meet = await create(getDatabaseUrl(context), name);
+  return redirect(`/m/${meet.uuid}`);
+};
 
 export default function Index() {
   const navigation = useNavigation();
@@ -104,7 +77,6 @@ export default function Index() {
           </p>
         </PopoverContent>
       </Popover>
-      <WeHaveMovedBanner />
     </div>
   );
 }
