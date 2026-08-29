@@ -7,6 +7,10 @@
   "workers_dev": true,
   "routes": [
     {
+      "pattern": "wayf.quietlymadesoftware.com",
+      "custom_domain": true
+    },
+    {
       "pattern": "wayf.grainlabs.co",
       "custom_domain": true
     }
@@ -18,6 +22,5 @@
   // DATABASE_URL is a Worker secret. Do not put it in `vars`.
   //   npx wrangler secret put DATABASE_URL
   // Locally, copy .dev.vars.example to .dev.vars.
-  // This config overwrites the existing account Worker named `wayf`
-  // (e5e1317519674e49aaab82528e6ab10a). Keep workers.dev + wayf.grainlabs.co.
+  // Public host is wayf.quietlymadesoftware.com. grainlabs.co stays attached.
 }
