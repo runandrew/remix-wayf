@@ -113,7 +113,7 @@ export function IconCheck({ className }: { className?: string }) {
       height="20"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#16a34a"
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

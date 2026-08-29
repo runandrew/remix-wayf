@@ -26,7 +26,7 @@ function isHomepageGet(request: Request): boolean {
 }
 
 // Bump when homepage HTML or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "2";
+const HOMEPAGE_CACHE_VERSION = "3";
 
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
@@ -38,12 +38,24 @@ function edgeCache(): Cache {
   return (caches as unknown as { default: Cache }).default;
 }
 
+function rewriteLegacyCreatePost(request: Request): Request {
+  if (request.method !== "POST") {
+    return request;
+  }
+  const url = new URL(request.url);
+  if (url.pathname !== "/") {
+    return request;
+  }
+  url.pathname = "/create";
+  return new Request(url, request);
+}
+
 export default {
   async fetch(request, env, ctx) {
     const loadContext = { cloudflare: { env, ctx } };
 
     if (!isHomepageGet(request)) {
-      return requestHandler(request, loadContext);
+      return requestHandler(rewriteLegacyCreatePost(request), loadContext);
     }
 
     const cache = edgeCache();

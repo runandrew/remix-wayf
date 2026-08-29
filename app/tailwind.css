@@ -20,13 +20,13 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215 16% 38%;
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 40%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
@@ -53,13 +53,13 @@
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 16% 72%;
 
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 68%;
+    --destructive-foreground: 222.2 47.4% 11.2%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
@@ -71,7 +71,22 @@
   * {
     @apply border-border;
   }
+  :root {
+    color-scheme: light;
+  }
+  .dark,
+  :root[class~="dark"] {
+    color-scheme: dark;
+  }
+  html {
+    accent-color: hsl(var(--foreground));
+  }
   body {
     @apply bg-background text-foreground;
+    caret-color: hsl(var(--foreground));
+  }
+  ::selection {
+    background-color: hsl(var(--foreground) / 0.16);
+    color: hsl(var(--foreground));
   }
 }

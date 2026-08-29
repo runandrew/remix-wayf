@@ -9,8 +9,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  type LinksFunction,
 } from "react-router";
-import type { LinksFunction } from "react-router";
 import stylesheet from "./tailwind.css?url";
 
 export const links: LinksFunction = () => [
@@ -57,38 +57,37 @@ export default function App() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-between px-4">
       <Outlet />
-      <div className="flex w-full flex-col items-center justify-between gap-1 pt-8">
-        <div className="h-[1px] w-full shrink-0 bg-border" />
-        <div className="flex w-full flex-row items-center justify-between pb-4">
-          <Link to="/">
-            <span className="text-m scroll-m-20 font-semibold tracking-tight">
-              WAYF
-            </span>
+      <footer className="flex w-full flex-col pt-10">
+        <div className="h-px w-full bg-border" />
+        <div className="flex w-full items-center justify-between py-3">
+          <Link
+            to="/"
+            className="inline-flex h-11 items-center text-base font-semibold tracking-tight"
+          >
+            WAYF
           </Link>
-          <div className="flex flex-row items-center">
+          <div className="flex items-center">
             <Button variant="ghost" size="icon" asChild>
               <a
                 href="https://github.com/runandrew/remix-wayf"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="WAYF on GitHub"
               >
-                <IconGithub className="h-[1.2rem] w-[1.2rem]" />
+                <IconGithub className="h-5 w-5" />
               </a>
             </Button>
             <ModeToggle />
           </div>
         </div>
-      </div>
+      </footer>
     </main>
   );
 }
 
 export function ErrorBoundary({ error }: { error: unknown }) {
-  const message = isRouteErrorResponse(error)
-    ? error.status === 404
-      ? "Not found"
-      : "Something went wrong"
-    : "Something went wrong";
+  const notFound = isRouteErrorResponse(error) && error.status === 404;
+  const message = notFound ? "Meetup not found" : "Something went wrong";
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center px-4">

@@ -40,6 +40,11 @@ export function formatDayHeading(day: string): string {
   return `${WEEKDAYS[date.getDay()]}, ${MONTHS[date.getMonth()]} ${date.getDate()}`;
 }
 
+export function startOfToday(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
 export function isValidDay(day: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
     return false;
