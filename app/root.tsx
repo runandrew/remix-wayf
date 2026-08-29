@@ -17,7 +17,22 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-const themeScript = `(()=>{var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")})();`;
+const themeScript = `(() => {
+  const root = document.documentElement;
+  const media = matchMedia("(prefers-color-scheme: dark)");
+  const apply = () => {
+    const stored = localStorage.getItem("theme");
+    root.classList.toggle(
+      "dark",
+      stored === "dark" || (stored !== "light" && media.matches),
+    );
+  };
+  apply();
+  media.addEventListener("change", () => {
+    const stored = localStorage.getItem("theme");
+    if (stored !== "light" && stored !== "dark") apply();
+  });
+})();`;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
