@@ -127,7 +127,7 @@ function homeJsonLd() {
         ],
       },
       {
-        "@type": ["SoftwareApplication", "WebApplication"],
+        "@type": "WebApplication",
         "@id": appId,
         name: "WAYF",
         alternateName: ["When are you free?", HOME_TITLE],
@@ -136,7 +136,6 @@ function homeJsonLd() {
         applicationCategory: "UtilitiesApplication",
         operatingSystem: "Web",
         image,
-        screenshot: image,
         isAccessibleForFree: true,
         offers: {
           "@type": "Offer",
