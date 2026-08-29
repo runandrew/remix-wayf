@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap");
+
+.cobalt-preview {
+  --cobalt-paper: #f3eee4;
+  --cobalt-ink: #1c1814;
+  --cobalt-accent: #1e4bff;
+  --cobalt-muted: #6b6560;
+  --cobalt-line: #1c1814;
+
+  background-color: var(--cobalt-paper);
+  color: var(--cobalt-ink);
+  font-family: "Newsreader", Georgia, serif;
+  min-height: 100dvh;
+}
+
+.cobalt-preview .cobalt-wordmark {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: clamp(4.5rem, 18vw, 6.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: var(--cobalt-ink);
+}
+
+.cobalt-preview .cobalt-tagline {
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.cobalt-preview .cobalt-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--cobalt-line);
+  border-radius: 0;
+  padding: 0.5rem 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 1.125rem;
+  color: var(--cobalt-ink);
+  outline: none;
+}
+
+.cobalt-preview .cobalt-input::placeholder {
+  color: var(--cobalt-muted);
+  opacity: 0.7;
+}
+
+.cobalt-preview .cobalt-input:focus {
+  border-bottom-color: var(--cobalt-ink);
+}
+
+.cobalt-preview .cobalt-btn {
+  background: var(--cobalt-accent);
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  padding: 0.625rem 1.25rem;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cobalt-preview .cobalt-btn:hover {
+  background: #183dcc;
+}
+
+.cobalt-preview .cobalt-btn-secondary {
+  background: transparent;
+  color: var(--cobalt-ink);
+  border: 1.5px solid var(--cobalt-ink);
+  border-radius: 0;
+  padding: 0.625rem 1.25rem;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cobalt-preview .cobalt-link {
+  background: none;
+  border: none;
+  color: var(--cobalt-ink);
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 1rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.cobalt-preview .cobalt-title {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--cobalt-ink);
+}
+
+.cobalt-preview .cobalt-subtitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cobalt-preview .cobalt-check {
+  color: var(--cobalt-accent);
+}
+
+.cobalt-preview .cobalt-footer {
+  border-top: 1px solid rgba(28, 24, 20, 0.15);
+  padding: 0.75rem 0;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.cobalt-preview .cobalt-badge {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cobalt-muted);
+  background: rgba(28, 24, 20, 0.06);
+  padding: 0.25rem 0.5rem;
+}
