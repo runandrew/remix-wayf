@@ -19,14 +19,15 @@ const HOMEPAGE_CACHE_CONTROL =
   "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800";
 
 function isHomepageGet(request: Request): boolean {
-  if (request.method !== "GET" && request.method !== "HEAD") {
+  if (request.method !== "GET") {
     return false;
   }
-  return new URL(request.url).pathname === "/";
+  const url = new URL(request.url);
+  return url.pathname === "/" && url.search === "";
 }
 
 // Bump when homepage HTML or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "3";
+const HOMEPAGE_CACHE_VERSION = "4";
 
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
