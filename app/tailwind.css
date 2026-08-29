@@ -81,6 +81,7 @@
   }
   html {
     accent-color: oklch(var(--primary));
+    scrollbar-color: oklch(var(--border)) oklch(var(--background));
   }
   body {
     @apply bg-background text-foreground;
