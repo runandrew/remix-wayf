@@ -2,9 +2,15 @@ import { AboutPopover } from "@/components/AboutPopover";
 import { FormError } from "@/components/FormError";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Input } from "@/components/ui/input";
+import { createMeetupAction } from "@/lib/create-meetup.server";
 import { formErrorMessage } from "@/lib/form-errors";
-import type { MetaFunction } from "react-router";
-import { Form, useNavigation, useSearchParams } from "react-router";
+import type { ActionFunctionArgs, MetaFunction } from "react-router";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,17 +19,18 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export function headers() {
-  return {
-    "Cache-Control":
-      "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
-  };
-}
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+  return createMeetupAction(request, context);
+};
 
 export default function Index() {
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
-  const error = formErrorMessage(searchParams.get("error"));
+  const actionData = useActionData<typeof action>();
+  const error = formErrorMessage(
+    (actionData && "error" in actionData ? actionData.error : null) ??
+      searchParams.get("error"),
+  );
   const submitting = navigation.state === "submitting";
 
   return (
@@ -34,7 +41,7 @@ export default function Index() {
           Scheduling meetups <i>simplified</i>
         </p>
       </div>
-      <Form method="post" action="/create" className="flex w-full flex-col gap-2">
+      <Form method="post" action="/?index" className="flex w-full flex-col gap-2">
         <div className="flex flex-row items-center gap-3">
           <label htmlFor="meetup-name" className="sr-only">
             Meetup name

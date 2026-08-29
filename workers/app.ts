@@ -27,7 +27,7 @@ function isHomepageGet(request: Request): boolean {
 }
 
 // Bump when homepage HTML or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "4";
+const HOMEPAGE_CACHE_VERSION = "5";
 
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
@@ -45,6 +45,10 @@ function rewriteLegacyCreatePost(request: Request): Request {
   }
   const url = new URL(request.url);
   if (url.pathname !== "/") {
+    return request;
+  }
+  // RR index actions post to /?index. Leave those on the homepage route.
+  if (url.searchParams.has("index")) {
     return request;
   }
   url.pathname = "/create";

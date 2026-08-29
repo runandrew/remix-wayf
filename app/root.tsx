@@ -87,7 +87,11 @@ export default function App() {
 
 export function ErrorBoundary({ error }: { error: unknown }) {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
-  const message = notFound ? "Meetup not found" : "Something went wrong";
+  const message = notFound
+    ? typeof error.data === "string" && error.data
+      ? error.data
+      : "Not found"
+    : "Something went wrong";
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center px-4">

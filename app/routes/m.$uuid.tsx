@@ -18,7 +18,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 function requireId(uuid: string | undefined): string {
   const id = uuid?.trim();
   if (!id) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Meetup not found", { status: 404 });
   }
   return id;
 }
@@ -26,7 +26,7 @@ function requireId(uuid: string | undefined): string {
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   const meet = await find(getDatabaseUrl(context), requireId(params.uuid));
   if (!meet) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Meetup not found", { status: 404 });
   }
   return { meet };
 };
