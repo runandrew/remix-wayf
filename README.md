@@ -78,6 +78,6 @@ This rewrite:
 
 - SSR on Cloudflare Workers (official Vite plugin path, not Pages)
 - Neon via HTTP (`drizzle-orm/neon-http`), same schema
-- Homepage GET is static: no Neon, no session. Cached at the edge (`caches.default`, 1 day, stale-while-revalidate 1 week)
+- Homepage GET is static: no Neon, no session. Cached at the edge (`caches.default`) keyed by the production build id and hashed CSS URL. Browsers get `max-age=0, must-revalidate` so a reload after deploy cannot keep HTML that points at deleted `/assets/*` files.
 - Neon HTTP client is reused per Worker isolate. Create and save availability are one query each, then redirect
 - Dead Supabase, Remix Node server, Sentry upload, and Vercel analytics removed
