@@ -115,6 +115,11 @@ function homeJsonLd() {
         name: "Quietly Made LLC",
         url: "https://quietlymadesoftware.com/",
         email: "support@quietlymadesoftware.com",
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: "support@quietlymadesoftware.com",
+        },
         logo: {
           "@type": "ImageObject",
           url: mark,

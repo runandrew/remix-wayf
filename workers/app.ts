@@ -1,3 +1,9 @@
+import {
+  isMarkdownDocumentPath,
+  markdownBody,
+  markdownResponse,
+  wantsMarkdown,
+} from "@/lib/markdown";
 import { createRequestHandler } from "react-router";
 
 declare module "react-router" {
@@ -27,7 +33,7 @@ function isHomepageGet(request: Request): boolean {
 }
 
 // Bump when homepage HTML, CSS tokens, or the theme boot script changes.
-const HOMEPAGE_CACHE_VERSION = "8";
+const HOMEPAGE_CACHE_VERSION = "9";
 
 function homepageCacheKey(request: Request): Request {
   const url = new URL("/", request.url);
@@ -41,7 +47,7 @@ function edgeCache(): Cache {
 
 function withMeetRobots(request: Request, response: Response): Response {
   const path = new URL(request.url).pathname;
-  if (!path.startsWith("/m/")) {
+  if (!path.startsWith("/m/") && response.status !== 404) {
     return response;
   }
   const headers = new Headers(response.headers);
@@ -51,6 +57,18 @@ function withMeetRobots(request: Request, response: Response): Response {
     statusText: response.statusText,
     headers,
   });
+}
+
+function markdownDocumentResponse(request: Request): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return null;
+  }
+  const path = new URL(request.url).pathname;
+  if (!isMarkdownDocumentPath(path) || !wantsMarkdown(request)) {
+    return null;
+  }
+  const { status, body } = markdownBody(path);
+  return markdownResponse(request, status, body);
 }
 
 function rewriteLegacyCreatePost(request: Request): Request {
@@ -73,6 +91,11 @@ export default {
   async fetch(request, env, ctx) {
     const loadContext = { cloudflare: { env, ctx } };
 
+    const markdown = markdownDocumentResponse(request);
+    if (markdown) {
+      return withMeetRobots(request, markdown);
+    }
+
     if (!isHomepageGet(request)) {
       return withMeetRobots(
         request,
@@ -94,6 +117,7 @@ export default {
 
     const headers = new Headers(response.headers);
     headers.set("Cache-Control", HOMEPAGE_CACHE_CONTROL);
+    headers.append("Vary", "Accept, Accept-Encoding");
     const cacheable = new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
