@@ -4,6 +4,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { Input } from "@/components/ui/input";
 import { createMeetupAction } from "@/lib/create-meetup.server";
 import { formErrorMessage } from "@/lib/form-errors";
+import { homeMeta } from "@/lib/seo";
 import type { ActionFunctionArgs, MetaFunction } from "react-router";
 import {
   Form,
@@ -12,12 +13,7 @@ import {
   useSearchParams,
 } from "react-router";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "WAYF: When are you free?" },
-    { name: "description", content: "Scheduling, simplified" },
-  ];
-};
+export const meta: MetaFunction = () => homeMeta();
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   return createMeetupAction(request, context);
@@ -41,7 +37,11 @@ export default function Index() {
           Scheduling meetups <i>simplified</i>
         </p>
       </div>
-      <Form method="post" action="/?index" className="flex w-full flex-col gap-2">
+      <Form
+        method="post"
+        action="/?index"
+        className="flex w-full flex-col gap-2"
+      >
         <div className="flex flex-row items-center gap-3">
           <label htmlFor="meetup-name" className="sr-only">
             Meetup name

@@ -4,16 +4,18 @@ import { IconCheck } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getDatabaseUrl } from "@/env";
 import { formatDayHeading } from "@/lib/dates";
+import { meetMeta } from "@/lib/seo";
 import { Availabilities } from "@/types";
-import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "react-router";
 import { Link, useLoaderData, useNavigation } from "react-router";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [
-    { title: `${data?.meet.name ?? "When are you free?"} | WAYF` },
-    { name: "description", content: "Scheduling, simplified" },
-  ];
-};
+export const headers: HeadersFunction = () => ({
+  "X-Robots-Tag": "noindex, nofollow",
+});
 
 function requireId(uuid: string | undefined): string {
   const id = uuid?.trim();
@@ -30,6 +32,12 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   }
   return { meet };
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) =>
+  meetMeta({
+    name: data?.meet.name,
+    pathname: data ? `/m/${data.meet.uuid}` : "/m/",
+  });
 
 const availsByDate = (avails: Availabilities) => {
   const dates: Record<string, string[]> = {};
