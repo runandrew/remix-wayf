@@ -1,19 +1,11 @@
+import { cloudflareContext } from "@/cloudflare-context";
 import {
   isMarkdownDocumentPath,
   markdownBody,
   markdownResponse,
   wantsMarkdown,
 } from "@/lib/markdown";
-import { createRequestHandler } from "react-router";
-
-declare module "react-router" {
-  export interface AppLoadContext {
-    cloudflare: {
-      env: Env;
-      ctx: ExecutionContext;
-    };
-  }
-}
+import { RouterContextProvider, createRequestHandler } from "react-router";
 
 const requestHandler = createRequestHandler(
   // eslint-disable-next-line import/no-unresolved -- Vite virtual module
@@ -65,7 +57,8 @@ function rewriteLegacyCreatePost(request: Request): Request {
 
 export default {
   async fetch(request, env, ctx) {
-    const loadContext = { cloudflare: { env, ctx } };
+    const loadContext = new RouterContextProvider();
+    loadContext.set(cloudflareContext, { env, ctx });
 
     const markdown = markdownDocumentResponse(request);
     if (markdown) {

@@ -44,10 +44,10 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   return { meet };
 };
 
-export const meta: MetaFunction<typeof loader> = ({ data }) =>
+export const meta: MetaFunction<typeof loader> = ({ loaderData }) =>
   meetMeta({
-    name: data?.meet.name,
-    pathname: data ? `/m/${data.meet.uuid}/avails` : "/m/",
+    name: loaderData?.meet.name,
+    pathname: loaderData ? `/m/${loaderData.meet.uuid}/avails` : "/m/",
   });
 
 const Avails = () => {
