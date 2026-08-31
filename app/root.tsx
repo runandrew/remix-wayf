@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { IconGithub } from "@/components/icons";
 import { ModeToggle } from "@/components/ModeToggle";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,7 @@ const themeScript = `(() => {
   });
 })();`;
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
