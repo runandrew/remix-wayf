@@ -10,7 +10,7 @@ export type CreateMeetupResult =
 
 export async function createMeetupAction(
   request: Request,
-  context: RouterContextProvider,
+  context: Readonly<RouterContextProvider>,
 ): Promise<CreateMeetupResult> {
   const formData = await request.formData();
   const name = String(formData.get("name") ?? "").trim();
@@ -28,7 +28,7 @@ export async function createMeetupAction(
 
 export async function createMeetupResponse(
   request: Request,
-  context: RouterContextProvider,
+  context: Readonly<RouterContextProvider>,
 ): Promise<Response> {
   const result = await createMeetupAction(request, context);
   if (result instanceof Response) {

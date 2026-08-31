@@ -1,7 +1,9 @@
 import { cloudflareContext } from "@/cloudflare-context";
 import type { RouterContextProvider } from "react-router";
 
-export function getDatabaseUrl(context: RouterContextProvider): string {
+export function getDatabaseUrl(
+  context: Readonly<RouterContextProvider>,
+): string {
   const env = context.get(cloudflareContext).env;
   const databaseUrl = env.DATABASE_URL || env.VITE_DATABASE_URL;
   if (!databaseUrl) {
