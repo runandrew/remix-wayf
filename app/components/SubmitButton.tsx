@@ -19,7 +19,12 @@ export function SubmitButton({
     >
       <span className={submitting ? "invisible" : undefined}>{text}</span>
       {submitting ? (
-        <IconSpinner className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+        <span
+          className="absolute inset-0 flex items-center justify-center"
+          aria-hidden
+        >
+          <IconSpinner className="h-4 w-4 animate-spin" />
+        </span>
       ) : null}
     </Button>
   );
