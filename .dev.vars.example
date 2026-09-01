@@ -2,3 +2,7 @@
 # Use a Neon connection string. The Worker talks to Neon over HTTP,
 # so a local docker Postgres URL will not work.
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+
+# PostHog is client-only (Vite). Do not put VITE_POSTHOG_* here or in wrangler vars.
+# Local: copy .env.example to .env.
+# Production `npm run build` reads committed .env.production.
