@@ -1,4 +1,4 @@
-import { find } from "@/api/services/meet";
+import { find, remove } from "@/api/services/meet";
 import ShareButton from "@/components/ShareButton";
 import { IconCheck } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { formatDayHeading } from "@/lib/dates";
 import { meetMeta } from "@/lib/seo";
 import { Availabilities } from "@/types";
 import type {
+  ActionFunctionArgs,
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
@@ -31,6 +32,19 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
     throw new Response("Meetup not found", { status: 404 });
   }
   return { meet };
+};
+
+export const action = async ({
+  request,
+  params,
+  context,
+}: ActionFunctionArgs) => {
+  const id = requireId(params.uuid);
+  if (request.method !== "DELETE") {
+    throw new Response("Method Not Allowed", { status: 405 });
+  }
+  await remove(getDatabaseUrl(context), id);
+  return new Response(null, { status: 204 });
 };
 
 export const meta: MetaFunction<typeof loader> = ({ loaderData }) =>

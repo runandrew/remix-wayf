@@ -2,6 +2,7 @@ import {
   create as insertMeet,
   find as findMeet,
   mergeAvailabilities,
+  remove as removeMeet,
 } from "@/api/repositories/meet";
 import { isValidDay } from "@/lib/dates";
 import { newExternalId } from "@/lib/id";
@@ -40,6 +41,16 @@ export async function updateMeetAvails(
   );
 
   if (!updated) {
+    throw new Response("Not Found", { status: 404 });
+  }
+}
+
+export async function remove(
+  databaseUrl: string,
+  externalId: string,
+): Promise<void> {
+  const deleted = await removeMeet(databaseUrl, externalId);
+  if (!deleted) {
     throw new Response("Not Found", { status: 404 });
   }
 }
