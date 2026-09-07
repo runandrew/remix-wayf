@@ -72,3 +72,16 @@ export async function mergeAvailabilities(
   `;
   return Array.isArray(rows) && rows.length > 0;
 }
+
+export async function remove(
+  databaseUrl: string,
+  externalId: string,
+): Promise<boolean> {
+  const db = getDb(databaseUrl);
+  const deleted = await db
+    .delete(meetTable)
+    .where(eq(meetTable.externalId, externalId))
+    .returning({ externalId: meetTable.externalId });
+
+  return deleted.length > 0;
+}
