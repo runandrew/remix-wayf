@@ -14,4 +14,12 @@ If agent-browser and walkthrough or computerUse are blocked once, stop. Open or 
 
 Prefer build, typecheck, and HTTP smoke over screenshots when pixels are not required.
 
-Nested pstack and poteto agents inherit the parent model (`inherit-parent`). Do not let Fast or xhigh override parent grok-4.7 xhigh with Fast off.
+## Models
+
+House CloudAgent / coding parent default:
+
+- model: grok-4.7
+- Fast off (fast=false)
+- reasoning_effort=high
+
+Nested pstack and poteto agents inherit the parent model (`inherit-parent`). Do not let Fast or xhigh override that parent.

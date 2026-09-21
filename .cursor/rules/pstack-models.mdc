@@ -3,6 +3,7 @@ description: pstack per-role model choices (overrides skill defaults)
 alwaysApply: true
 ---
 # pstack model configuration. One line per role. All roles inherit the parent chat model.
+# Parent default: model grok-4.7, Fast off (fast=false), reasoning_effort=high.
 # `inherit-parent` or `auto`: role runs on the parent chat model (omit Task `model`).
 feature, refactoring: inherit-parent
 bug-fix: inherit-parent
