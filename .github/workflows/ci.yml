@@ -37,8 +37,10 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --ipc=host
     permissions:
-      contents: write
+      contents: read
       actions: write
+    outputs:
+      update: ${{ steps.snapshots.outputs.update }}
     env:
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
@@ -78,8 +80,29 @@ jobs:
           name: playwright-diffs
           path: test-results
           if-no-files-found: ignore
-      - name: Commit updated snapshots
+      - name: Upload rewritten snapshots
         if: success() && steps.snapshots.outputs.update == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-snapshots
+          path: e2e/wayf.spec.ts-snapshots
+
+  commit-snapshots:
+    needs: e2e
+    if: needs.e2e.result == 'success' && needs.e2e.outputs.update == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: playwright-snapshots
+          path: e2e/wayf.spec.ts-snapshots
+      - name: Commit updated snapshots
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -94,7 +117,6 @@ jobs:
           git commit -m "test: update visual snapshots from the Playwright image"
           git push origin "HEAD:refs/heads/${{ github.head_ref || github.ref_name }}"
       - name: Verify the snapshot commit
-        if: success() && steps.snapshots.outputs.update == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
