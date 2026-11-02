@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       update_snapshots:
-        description: Regenerate Playwright snapshots and upload them
+        description: Regenerate Playwright snapshots and upload the playwright-snapshots artifact
         required: false
         type: boolean
         default: false
@@ -54,14 +54,11 @@ jobs:
       - name: Decide whether to rewrite snapshots
         id: snapshots
         run: |
-          update=false
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
-            update=true
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "update=false" >> "$GITHUB_OUTPUT"
           fi
-          if [ -f e2e/UPDATE_SNAPSHOTS ]; then
-            update=true
-          fi
-          echo "update=$update" >> "$GITHUB_OUTPUT"
       - name: Browser tests
         run: |
           if [ "${{ steps.snapshots.outputs.update }}" = "true" ]; then
