@@ -1,13 +1,13 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_POSTHOG_PROJECT_TOKEN?: string;
-  readonly VITE_POSTHOG_HOST?: string;
-}
-
 export {};
 
 declare global {
+  interface ImportMetaEnv {
+    readonly VITE_POSTHOG_PROJECT_TOKEN?: string;
+    readonly VITE_POSTHOG_HOST?: string;
+  }
+
   interface Env {
     DATABASE_URL?: string;
     // Legacy Hono Worker used this name in .env.example.
