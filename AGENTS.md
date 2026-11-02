@@ -40,4 +40,4 @@ With Docker:
 docker run --rm --ipc=host -v "$PWD":/work -w /work -e PLAYWRIGHT_BROWSERS_PATH=/ms-playwright -e PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mcr.microsoft.com/playwright:v1.64.1-noble bash -lc "npm ci && npx playwright test --update-snapshots"
 ```
 
-Without Docker, run the CI workflow on the branch and set "update snapshots" to true. That job rewrites the png files in the image above and commits them. Keep the image tag on the locked `@playwright/test` version.
+Without Docker, run the CI workflow on the branch and set "update snapshots" to true. That job rewrites the png files in the image above and commits them. Committing a file named `e2e/UPDATE_SNAPSHOTS` asks the same job to rewrite the baselines, delete that file, and commit. Keep the image tag on the locked `@playwright/test` version.

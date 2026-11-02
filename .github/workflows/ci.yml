@@ -44,6 +44,8 @@ jobs:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -51,9 +53,20 @@ jobs:
       - run: npm ci
       - name: Check the Playwright package matches the image
         run: node -e "const v=require('@playwright/test/package.json').version; if (v !== '1.64.1') { console.error('expected 1.64.1, found ' + v); process.exit(1); }"
+      - name: Decide whether to rewrite snapshots
+        id: snapshots
+        run: |
+          update=false
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
+            update=true
+          fi
+          if [ -f e2e/UPDATE_SNAPSHOTS ]; then
+            update=true
+          fi
+          echo "update=$update" >> "$GITHUB_OUTPUT"
       - name: Browser tests
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
+          if [ "${{ steps.snapshots.outputs.update }}" = "true" ]; then
             npm run test:e2e -- --update-snapshots
           else
             npm run test:e2e
@@ -66,22 +79,25 @@ jobs:
           path: test-results
           if-no-files-found: ignore
       - name: Commit updated snapshots
-        if: success() && github.event_name == 'workflow_dispatch' && github.event.inputs.update_snapshots == 'true'
+        if: success() && steps.snapshots.outputs.update == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add e2e/wayf.spec.ts-snapshots
+          if [ -f e2e/UPDATE_SNAPSHOTS ]; then
+            git rm -f e2e/UPDATE_SNAPSHOTS
+          fi
           if git diff --staged --quiet; then
             echo "Snapshots already match the Playwright image."
             exit 0
           fi
           git commit -m "test: update visual snapshots from the Playwright image"
-          git push origin "HEAD:refs/heads/${{ github.ref_name }}"
+          git push origin "HEAD:refs/heads/${{ github.head_ref || github.ref_name }}"
       - name: Verify the snapshot commit
-        if: success() && github.event_name == 'workflow_dispatch' && github.event.inputs.update_snapshots == 'true'
+        if: success() && steps.snapshots.outputs.update == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          BRANCH: ${{ github.ref_name }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           node --input-type=module <<'EOF'
           const sha = (await exec("git rev-parse HEAD")).trim();
@@ -91,14 +107,20 @@ jobs:
             Authorization: `Bearer ${process.env.GH_TOKEN}`,
             Accept: "application/vnd.github+json",
           };
+          let remote = "";
           for (let attempt = 0; attempt < 10; attempt += 1) {
             const ref = await fetch(
               `https://api.github.com/repos/${repo}/git/ref/heads/${branch}`,
               { headers },
             );
             const body = await ref.json();
-            if (body.object?.sha === sha) break;
+            remote = body.object?.sha ?? "";
+            if (remote === sha) break;
             await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+          if (remote !== sha) {
+            console.error(`remote ${branch} is ${remote}, expected ${sha}`);
+            process.exit(1);
           }
           const dispatch = await fetch(
             `https://api.github.com/repos/${repo}/actions/workflows/ci.yml/dispatches`,
