@@ -61,6 +61,9 @@ test("pick days and show overlap", async ({ page }) => {
     }
   }
 
+  await expect(page.locator('input[name="dates"]')).toHaveValue(
+    "2026-06-16,2026-06-17",
+  );
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("1 / 1")).toHaveCount(2);
 
@@ -94,8 +97,21 @@ test("pick days and show overlap", async ({ page }) => {
   }
 });
 
-function pickDay(page: Page, day: string) {
-  return page.getByRole("gridcell", { name: day, exact: true }).click();
+async function pickDay(page: Page, day: string) {
+  const cell = page.getByRole("gridcell", { name: day, exact: true });
+  await expect(cell).toBeVisible();
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if ((await cell.getAttribute("aria-selected")) === "true") return;
+    await cell.click();
+    try {
+      await expect(cell).toHaveAttribute("aria-selected", "true", {
+        timeout: 3_000,
+      });
+      return;
+    } catch (error) {
+      if (attempt === 2) throw error;
+    }
+  }
 }
 
 async function setTheme(page: Page, theme: "light" | "dark") {
