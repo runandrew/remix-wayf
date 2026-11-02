@@ -1,0 +1,8 @@
+{
+  "name": "eslint-typescript",
+  "private": true,
+  "description": "TypeScript 5.9 parser API for ESLint. TypeScript 7.0's main export is only the version.",
+  "dependencies": {
+    "typescript": "5.9.3"
+  }
+}
