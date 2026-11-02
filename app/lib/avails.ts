@@ -1,5 +1,15 @@
 import type { Availabilities } from "@/types";
 
+export function mergeFreeDays(
+  current: readonly Date[] | undefined,
+  picked: readonly Date[] | undefined,
+  today: Date,
+): Date[] {
+  const keptPast = (current ?? []).filter((day) => day < today);
+  const next = (picked ?? []).filter((day) => day >= today);
+  return [...keptPast, ...next];
+}
+
 export function availsByDate(avails: Availabilities) {
   const dates: Record<string, string[]> = {};
   for (const group in avails) {
