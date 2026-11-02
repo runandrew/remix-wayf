@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { getDatabaseUrl } from "@/env";
+import { mergeFreeDays } from "@/lib/avails";
 import { formatDay, parseDay, startOfToday } from "@/lib/dates";
 import { formErrorMessage } from "@/lib/form-errors";
 import { meetMeta } from "@/lib/seo";
@@ -186,9 +187,7 @@ function AddAvails() {
             mode="multiple"
             selected={multiDates}
             onSelect={(days) => {
-              const keptPast = (multiDates ?? []).filter((day) => day < today);
-              const next = (days ?? []).filter((day) => day >= today);
-              setMultiDates([...keptPast, ...next]);
+              setMultiDates(mergeFreeDays(multiDates, days, today));
             }}
             disabled={{ before: today }}
             className="rounded-md border"
