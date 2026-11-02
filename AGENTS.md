@@ -23,3 +23,11 @@ House CloudAgent / coding parent default:
 - reasoning_effort=high
 
 Nested pstack and poteto agents inherit the parent model (`inherit-parent`). Do not let Fast or xhigh override that parent.
+
+## Tests
+
+`npm test` runs the unit tests and the route tests. The route tests open a temporary Postgres database in the test process and apply the Drizzle schema. They do not read a Neon `DATABASE_URL`.
+
+`npm run test:e2e` runs the browser tests. That command starts a local server on the same kind of database. Install the browser once with `npx playwright install chromium`.
+
+GitHub Actions runs lint, typecheck, build, `npm test`, and `npm run test:e2e` for pull requests and for pushes to `main`. The workflow does not deploy.

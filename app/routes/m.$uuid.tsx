@@ -3,9 +3,9 @@ import ShareButton from "@/components/ShareButton";
 import { IconCheck } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getDatabaseUrl } from "@/env";
+import { availsByDate } from "@/lib/avails";
 import { formatDayHeading } from "@/lib/dates";
 import { meetMeta } from "@/lib/seo";
-import { Availabilities } from "@/types";
 import type {
   ActionFunctionArgs,
   HeadersFunction,
@@ -52,25 +52,6 @@ export const meta: MetaFunction<typeof loader> = ({ loaderData }) =>
     name: loaderData?.meet.name,
     pathname: loaderData ? `/m/${loaderData.meet.uuid}` : "/m/",
   });
-
-const availsByDate = (avails: Availabilities) => {
-  const dates: Record<string, string[]> = {};
-  for (const group in avails) {
-    for (const date of avails[group]) {
-      if (!dates[date.day]) {
-        dates[date.day] = [];
-      }
-      dates[date.day].push(group);
-    }
-  }
-
-  return Object.keys(dates)
-    .map((day) => ({
-      day,
-      groups: dates[day],
-    }))
-    .sort((a, b) => (a.day < b.day ? -1 : a.day > b.day ? 1 : 0));
-};
 
 export default function MeetupDetails() {
   const { meet } = useLoaderData<typeof loader>();

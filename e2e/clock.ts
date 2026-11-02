@@ -1,0 +1,1 @@
+export const FIXED_TIME = "2026-06-15T12:00:00.000Z";
