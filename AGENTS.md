@@ -30,4 +30,14 @@ Nested pstack and poteto agents inherit the parent model (`inherit-parent`). Do 
 
 `npm run test:e2e` runs the browser tests. That command starts a local server on the same kind of database. Install the browser once with `npx playwright install chromium`.
 
-GitHub Actions runs lint, typecheck, build, `npm test`, and `npm run test:e2e` for pull requests and for pushes to `main`. The workflow does not deploy.
+GitHub Actions runs lint, typecheck, build, and `npm test` on the GitHub runner. The browser tests run in `mcr.microsoft.com/playwright:v1.64.1-noble`, the image published for the locked `@playwright/test` version. The workflow does not deploy. Screenshot comparison allows no differing pixels. A failed browser job uploads the diff images.
+
+Update visual baselines from that same image. A desktop browser will not match CI.
+
+With Docker:
+
+```
+docker run --rm --ipc=host -v "$PWD":/work -w /work -e PLAYWRIGHT_BROWSERS_PATH=/ms-playwright -e PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mcr.microsoft.com/playwright:v1.64.1-noble bash -lc "npm ci && npx playwright test --update-snapshots"
+```
+
+Without Docker, run the CI workflow on the branch and set "update snapshots" to true. That job rewrites the png files in the image above and commits them. Keep the image tag on the locked `@playwright/test` version.

@@ -4,10 +4,17 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: Regenerate Playwright snapshots in the CI image and commit them
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.update_snapshots || 'false' }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   check:
@@ -23,5 +30,94 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npm test
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+
+  e2e:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    permissions:
+      contents: write
+      actions: write
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Check the Playwright package matches the image
+        run: node -e "const v=require('@playwright/test/package.json').version; if (v !== '1.64.1') { console.error('expected 1.64.1, found ' + v); process.exit(1); }"
+      - name: Browser tests
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
+            npm run test:e2e -- --update-snapshots
+          else
+            npm run test:e2e
+          fi
+      - name: Upload snapshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diffs
+          path: test-results
+          if-no-files-found: ignore
+      - name: Commit updated snapshots
+        if: success() && github.event_name == 'workflow_dispatch' && github.event.inputs.update_snapshots == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/wayf.spec.ts-snapshots
+          if git diff --staged --quiet; then
+            echo "Snapshots already match the Playwright image."
+            exit 0
+          fi
+          git commit -m "test: update visual snapshots from the Playwright image"
+          git push origin "HEAD:refs/heads/${{ github.ref_name }}"
+      - name: Verify the snapshot commit
+        if: success() && github.event_name == 'workflow_dispatch' && github.event.inputs.update_snapshots == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'EOF'
+          const sha = (await exec("git rev-parse HEAD")).trim();
+          const repo = process.env.GITHUB_REPOSITORY;
+          const branch = process.env.BRANCH;
+          const headers = {
+            Authorization: `Bearer ${process.env.GH_TOKEN}`,
+            Accept: "application/vnd.github+json",
+          };
+          for (let attempt = 0; attempt < 10; attempt += 1) {
+            const ref = await fetch(
+              `https://api.github.com/repos/${repo}/git/ref/heads/${branch}`,
+              { headers },
+            );
+            const body = await ref.json();
+            if (body.object?.sha === sha) break;
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+          const dispatch = await fetch(
+            `https://api.github.com/repos/${repo}/actions/workflows/ci.yml/dispatches`,
+            {
+              method: "POST",
+              headers,
+              body: JSON.stringify({
+                ref: branch,
+                inputs: { update_snapshots: "false" },
+              }),
+            },
+          );
+          if (!dispatch.ok) {
+            console.error(dispatch.status, await dispatch.text());
+            process.exit(1);
+          }
+
+          async function exec(command) {
+            const { execSync } = await import("node:child_process");
+            return execSync(command, { encoding: "utf8" });
+          }
+          EOF
