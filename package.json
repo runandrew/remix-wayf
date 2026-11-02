@@ -10,7 +10,7 @@
     "deploy": "npm run build && wrangler deploy --keep-vars",
     "cf-typegen": "wrangler types",
     "typecheck": "npm run cf-typegen && react-router typegen && tsc --noEmit",
-    "lint": "node --require ./tools/eslint-typescript/register.cjs ./node_modules/eslint/bin/eslint.js --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint": "node --require ./tools/eslint-typescript/register.cjs ./node_modules/eslint/bin/eslint.js --cache --cache-location ./node_modules/.cache/eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test"
@@ -22,6 +22,7 @@
     "@radix-ui/react-toast": "^1.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
     "drizzle-orm": "^0.45.4",
     "isbot": "^5.2.2",
     "posthog-js": "^1.444.3",
@@ -35,27 +36,27 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.67.0",
     "@electric-sql/pglite": "^0.5.14",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
     "@react-router/dev": "8.5.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
     "autoprefixer": "^10.6.2",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.31.11",
-    "eslint": "^8.38.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint": "^10.14.0",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-typescript": "file:./tools/eslint-typescript",
+    "globals": "^17.14.0",
     "prettier": "^3.9.10",
     "tailwindcss": "^3.4.19",
     "typescript": "^7.0.2",
+    "typescript-eslint": "^8.72.1",
     "vite": "^8.3.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^5.1.0",
@@ -63,5 +64,37 @@
   },
   "engines": {
     "node": ">=22.22.0"
+  },
+  "overrides": {
+    "eslint-plugin-react": {
+      "eslint": "$eslint"
+    },
+    "eslint-plugin-jsx-a11y": {
+      "eslint": "$eslint"
+    },
+    "typescript-eslint": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/eslint-plugin": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/parser": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/project-service": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/tsconfig-utils": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/type-utils": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/utils": {
+      "typescript": "$typescript"
+    }
   }
 }

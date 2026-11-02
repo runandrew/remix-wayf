@@ -8,7 +8,6 @@ import {
 import { RouterContextProvider, createRequestHandler } from "react-router";
 
 const requestHandler = createRequestHandler(
-  // eslint-disable-next-line import/no-unresolved -- Vite virtual module
   () => import("virtual:react-router/server-build"),
   import.meta.env.MODE,
 );
