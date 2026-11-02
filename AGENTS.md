@@ -23,3 +23,21 @@ House CloudAgent / coding parent default:
 - reasoning_effort=high
 
 Nested pstack and poteto agents inherit the parent model (`inherit-parent`). Do not let Fast or xhigh override that parent.
+
+## Tests
+
+`npm test` runs the unit tests and the route tests. The route tests open a temporary Postgres database in the test process and apply the Drizzle schema. They do not read a Neon `DATABASE_URL`.
+
+`npm run test:e2e` runs the browser tests. That command starts a local server on the same kind of database. Install the browser once with `npx playwright install chromium`.
+
+GitHub Actions runs lint, typecheck, build, and `npm test` on the GitHub runner. The browser tests run in `mcr.microsoft.com/playwright:v1.64.1-noble`, the image published for the locked `@playwright/test` version. The workflow does not deploy. Screenshot comparison allows no differing pixels. A failed browser job uploads the diff images.
+
+Update visual baselines from that same image. A desktop browser will not match CI.
+
+With Docker:
+
+```
+docker run --rm --ipc=host -v "$PWD":/work -w /work -e PLAYWRIGHT_BROWSERS_PATH=/ms-playwright -e PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mcr.microsoft.com/playwright:v1.64.1-noble bash -lc "npm ci && npx playwright test --update-snapshots"
+```
+
+Without Docker, run the CI workflow on the branch and set "update snapshots" to true. That job runs in the same image and uploads a `playwright-snapshots` artifact. Download it and replace `e2e/wayf.spec.ts-snapshots`. CI does not commit those files. A pull request run only compares pixels. Keep the image tag on the locked `@playwright/test` version.

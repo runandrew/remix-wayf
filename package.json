@@ -11,7 +11,9 @@
     "cf-typegen": "wrangler types",
     "typecheck": "npm run cf-typegen && react-router typegen && tsc --noEmit",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
@@ -32,6 +34,8 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.67.0",
+    "@electric-sql/pglite": "^0.5.14",
+    "@playwright/test": "^1.64.1",
     "@react-router/dev": "8.5.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
@@ -53,6 +57,7 @@
     "typescript": "^5.9.3",
     "vite": "^8.3.5",
     "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^5.1.0",
     "wrangler": "^4.156.2"
   },
   "engines": {

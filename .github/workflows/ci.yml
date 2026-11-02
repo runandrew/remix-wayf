@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: Regenerate Playwright snapshots and upload the playwright-snapshots artifact
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+  e2e:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    permissions:
+      contents: read
+      actions: write
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Check the Playwright package matches the image
+        run: node -e "const v=require('@playwright/test/package.json').version; if (v !== '1.64.1') { console.error('expected 1.64.1, found ' + v); process.exit(1); }"
+      - name: Decide whether to rewrite snapshots
+        id: snapshots
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "update=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Browser tests
+        run: |
+          if [ "${{ steps.snapshots.outputs.update }}" = "true" ]; then
+            npm run test:e2e -- --update-snapshots
+          else
+            npm run test:e2e
+          fi
+      - name: Upload snapshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diffs
+          path: test-results
+          if-no-files-found: ignore
+      - name: Upload rewritten snapshots
+        if: success() && steps.snapshots.outputs.update == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-snapshots
+          path: e2e/wayf.spec.ts-snapshots
