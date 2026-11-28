@@ -50,7 +50,7 @@ npx wrangler secret put DATABASE_URL
 npm run deploy
 ```
 
-`npm run deploy` runs `react-router build` then `wrangler deploy`. That overwrites the existing account Worker named `wayf` (id `e5e1317519674e49aaab82528e6ab10a`).
+`npm run deploy` runs `react-router build` then `wrangler deploy`. That overwrites the existing account Worker named `wayf` (id `e5e1317519674e49aaab82528e6ab10a`). Merges to `main` auto-deploy the `wayf` Worker via Cloudflare Workers Builds (PR branches get preview versions).
 
 Public hosts already attached to that Worker:
 
